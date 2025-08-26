@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Asistente de Consulta NGAV",
+  "description": "Una aplicación web que te permite hacer preguntas sobre el contenido de los archivos en una carpeta de Google Drive seleccionada, utilizando la API de Gemini para obtener respuestas inteligentes.",
+  "requestFramePermissions": []
+}
