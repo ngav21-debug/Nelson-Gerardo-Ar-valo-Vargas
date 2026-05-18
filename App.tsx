@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GOOGLE_CLIENT_ID, GOOGLE_API_KEY, SCOPES } from './config';
 import type { GoogleFile, ChatMessage } from './types';
-import { queryFiles } from './services/geminiService';
+import { queryFiles } from './services/claudeService';
 import { ChatInterface } from './components/ChatInterface';
 import { FileList } from './components/FileList';
 import { GoogleIcon, FolderIcon } from './components/icons';
@@ -176,7 +176,7 @@ const App: React.FC = () => {
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
             Asistente de Consulta de Drive
           </h1>
-          <p className="text-gray-400 mt-2">Hazle preguntas a tus documentos con el poder de Gemini</p>
+          <p className="text-gray-400 mt-2">Hazle preguntas a tus documentos con el poder de Claude</p>
         </header>
 
         <main className="flex flex-col items-center">
