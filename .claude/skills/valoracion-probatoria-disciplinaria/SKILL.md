@@ -22,6 +22,8 @@ No supongas. Si el usuario no lo ha dicho, pregunta en un solo mensaje:
 3. **Sujeto disciplinable**: servidor público, particular con función pública, empleado judicial o abogado (Ley 1123 de 2007). Parte de la jurisprudencia verificada es de la CNDJ sobre abogados; no la trasladas sin explicar la diferencia.
 4. **Material disponible**: expediente, folios o archivos, HDR o HJR ya fijados, pruebas practicadas y las pedidas.
 
+5. **Vigencia de la acción**: compara la fecha de los hechos con la fecha de hoy y de las actuaciones. Si pudo vencer algún término de caducidad o prescripción, adviértelo de inmediato y remite a `evaluacion-investigacion-disciplinaria`: sin acción vigente no hay que valorar prueba. No afirmes plazos que no estén verificados en el texto oficial vigente.
+
 Si el expediente está incompleto, dilo y señala qué pieza falta; no rellenes con suposiciones.
 
 ## Método (en este orden)
