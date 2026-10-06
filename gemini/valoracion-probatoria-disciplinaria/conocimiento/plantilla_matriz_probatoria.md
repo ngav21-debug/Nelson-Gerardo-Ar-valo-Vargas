@@ -39,7 +39,7 @@ Reglas de llenado:
 - [ ] Cada hecho probado tiene medio y folio.
 - [ ] Se investigó con igual rigor lo favorable y lo desfavorable (arts. 13 y 148).
 - [ ] La ley aplicable y los artículos citados están verificados.
-- [ ] Las providencias citadas están en `references/jurisprudencia_verificada.md`.
+- [ ] Las providencias citadas están en «jurisprudencia_verificada».
 
 ## 7. Verificaciones pendientes para el usuario
 -
