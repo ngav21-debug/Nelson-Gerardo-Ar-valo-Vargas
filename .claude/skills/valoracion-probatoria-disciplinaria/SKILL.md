@@ -15,7 +15,7 @@ Un fallo o un pliego se caen por la prueba cuando el operador (a) usó material 
 
 ## Antes de empezar: pregunta lo que falta
 
-No supongas. Si el usuario no lo ha dicho, pregunta en un solo mensaje:
+No supongas. Si el usuario no lo ha dicho, pregunta en un solo mensaje (si no puedes preguntar, enuncia tus supuestos y continúa):
 
 1. **Fecha de los hechos** y fecha de las actuaciones: define si rige la Ley 734 de 2002 o la Ley 1952 de 2019 (la 1952 rige desde el 29-mar-2022 según el texto consultado) y si la favorabilidad (art. 8 Ley 1952) cambia el análisis.
 2. **Etapa y decisión que se va a motivar**: evaluación de indagación o investigación (pliego o archivo), fallo, decreto o negación de pruebas, nulidad, recurso, o revisión de lo decidido por otro operador.
