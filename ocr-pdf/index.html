@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OCR de PDF</title>
+<meta name="description" content="Convierte PDF escaneados en texto y en PDF con capa de texto buscable, todo en el navegador.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #1d2330;
+    --muted: #5b6474;
+    --accent: #2457d6;
+    --border: #dde1e8;
+    --ok: #1c7c4a;
+    --err: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1218;
+      --card: #171c25;
+      --text: #e7eaf0;
+      --muted: #9aa3b2;
+      --accent: #7ea2ff;
+      --border: #2a313d;
+      --ok: #4cc38a;
+      --err: #ff8a80;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1218;
+    --card: #171c25;
+    --text: #e7eaf0;
+    --muted: #9aa3b2;
+    --accent: #7ea2ff;
+    --border: #2a313d;
+    --ok: #4cc38a;
+    --err: #ff8a80;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 16px 64px;
+  }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .drop {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: border-color .15s, color .15s;
+  }
+  .drop:hover, .drop.over { border-color: var(--accent); color: var(--text); }
+  .drop strong { color: var(--accent); }
+  .drop input { display: none; }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+  label.lang { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+  select, button {
+    font: inherit;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    background: var(--card);
+    color: var(--text);
+  }
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:disabled { opacity: .5; cursor: not-allowed; }
+  a.btn {
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: var(--accent);
+    font-size: .92rem;
+  }
+  a.btn:hover { border-color: var(--accent); }
+
+  .notice { color: var(--muted); font-size: .9rem; margin: 12px 0 0; }
+  #global-status { color: var(--muted); font-size: .95rem; min-height: 1.4em; margin: 8px 0 0; }
+
+  .job { margin-bottom: 12px; }
+  .job-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .job-name { font-weight: 600; overflow-wrap: anywhere; }
+  .job-state { color: var(--muted); font-size: .9rem; }
+  .job[data-state="done"] .job-state { color: var(--ok); }
+  .job[data-state="error"] .job-state { color: var(--err); }
+  .bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width .2s;
+  }
+  .job[data-state="done"] .bar-fill { background: var(--ok); }
+  .job[data-state="error"] .bar-fill { background: var(--err); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  textarea.preview {
+    width: 100%;
+    margin-top: 12px;
+    min-height: 140px;
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    resize: vertical;
+  }
+  .empty { color: var(--muted); font-size: .95rem; text-align: center; margin: 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>OCR de PDF</h1>
+  <p class="lead">Convierte PDF escaneados o con imágenes en texto y en un PDF con texto buscable y seleccionable.</p>
+
+  <section class="panel">
+    <label class="drop" id="drop" for="file-input">
+      <strong>Haz clic o arrastra aquí tus PDF</strong><br>
+      <span>Puedes seleccionar varios archivos a la vez.</span>
+      <input id="file-input" type="file" accept="application/pdf,.pdf" multiple>
+    </label>
+
+    <div class="options">
+      <label class="lang">Idioma del texto
+        <select id="lang">
+          <option value="spa+eng" selected>Español + inglés</option>
+          <option value="spa">Español</option>
+          <option value="eng">Inglés</option>
+        </select>
+      </label>
+      <button class="primary" id="start" type="button" disabled>Procesar con OCR</button>
+    </div>
+
+    <p id="global-status"></p>
+    <p class="notice">
+      El texto se reconoce en su navegador: los PDF no se suben a ningún servidor.
+      La primera vez se descargan el motor y los datos de idioma de OCR, y puede tardar un poco.
+    </p>
+  </section>
+
+  <section id="list" aria-live="polite">
+    <p class="empty" id="empty">Aún no hay archivos.</p>
+  </section>
+</main>
+
+<script>
+  const PDFJS_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  // 2.5 × 72 pt ≈ 180 ppp: suficiente para OCR sin consumir demasiada memoria.
+  const RENDER_SCALE = 2.5;
+
+  const els = {
+    drop: document.getElementById('drop'),
+    input: document.getElementById('file-input'),
+    lang: document.getElementById('lang'),
+    start: document.getElementById('start'),
+    status: document.getElementById('global-status'),
+    list: document.getElementById('list'),
+    empty: document.getElementById('empty'),
+  };
+
+  const jobs = [];
+  let running = false;
+  let current = null; // { job, page, total } que recibe el progreso del motor OCR
+
+  // ---------- Utilidades ----------
+
+  function setStatus(text) {
+    els.status.textContent = text;
+  }
+
+  function refreshControls() {
+    const hasPending = jobs.some(j => j.state === 'pending');
+    els.start.disabled = running || !hasPending;
+    els.lang.disabled = running;
+    els.empty.hidden = jobs.length > 0;
+  }
+
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function baseName(name) {
+    return name.replace(/\.pdf$/i, '');
+  }
+
+  // Carga pdf.js desde un blob same-origin: evita restricciones de Worker entre orígenes.
+  async function configurePdfJs() {
+    const code = await (await fetch(PDFJS_WORKER_URL)).text();
+    const blobUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
+  }
+
+  // ---------- Cola de archivos ----------
+
+  function addFiles(fileList) {
+    const pdfs = [...fileList].filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+    if (pdfs.length !== fileList.length) {
+      setStatus('Solo se aceptan archivos PDF. Se ignoraron los demás.');
+    }
+    for (const file of pdfs) {
+      const job = { file, state: 'pending', page: 0, total: 0, progress: 0, error: null, txtBlob: null, pdfBlob: null, text: '', el: null };
+      jobs.push(job);
+      createCard(job);
+    }
+    refreshControls();
+  }
+
+  function createCard(job) {
+    const card = document.createElement('article');
+    card.className = 'panel job';
+    card.innerHTML = `
+      <div class="job-head">
+        <span class="job-name"></span>
+        <span class="job-state"></span>
+      </div>
+      <div class="bar"><div class="bar-fill"></div></div>
+      <div class="actions"></div>`;
+    card.querySelector('.job-name').textContent = job.file.name;
+    els.list.append(card);
+    job.el = {
+      card,
+      state: card.querySelector('.job-state'),
+      fill: card.querySelector('.bar-fill'),
+      actions: card.querySelector('.actions'),
+    };
+    paint(job);
+  }
+
+  function percentOf(job) {
+    if (job.state === 'done') return 1;
+    if (!job.total) return 0;
+    return ((job.page - 1) + job.progress) / job.total;
+  }
+
+  function paint(job) {
+    const { el } = job;
+    el.card.dataset.state = job.state;
+    el.fill.style.width = `${Math.round(percentOf(job) * 100)}%`;
+
+    if (job.state === 'pending') {
+      el.state.textContent = 'En cola';
+    } else if (job.state === 'processing') {
+      el.state.textContent = job.total
+        ? `Página ${job.page} de ${job.total} · reconociendo texto…`
+        : 'Abriendo PDF…';
+    } else if (job.state === 'done') {
+      el.state.textContent = `Listo · ${job.total} página(s)`;
+      buildResultActions(job);
+    } else if (job.state === 'error') {
+      el.state.textContent = `Error: ${job.error}`;
+    }
+  }
+
+  function buildResultActions(job) {
+    if (job.el.actions.childElementCount) return;
+    const base = baseName(job.file.name);
+
+    const txtUrl = URL.createObjectURL(job.txtBlob);
+    const pdfUrl = URL.createObjectURL(job.pdfBlob);
+
+    const txt = document.createElement('a');
+    txt.className = 'btn';
+    txt.href = txtUrl;
+    txt.download = `${base}_ocr.txt`;
+    txt.textContent = 'Descargar texto (.txt)';
+
+    const pdf = document.createElement('a');
+    pdf.className = 'btn';
+    pdf.href = pdfUrl;
+    pdf.download = `${base}_ocr.pdf`;
+    pdf.textContent = 'Descargar PDF buscable (.pdf)';
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.textContent = 'Ver texto';
+
+    const preview = document.createElement('textarea');
+    preview.className = 'preview';
+    preview.readOnly = true;
+    preview.value = job.text;
+    preview.hidden = true;
+
+    toggle.addEventListener('click', () => {
+      preview.hidden = !preview.hidden;
+      toggle.textContent = preview.hidden ? 'Ver texto' : 'Ocultar texto';
+    });
+
+    job.el.actions.append(txt, pdf, toggle);
+    job.el.card.append(preview);
+  }
+
+  // ---------- Motor OCR ----------
+
+  function onEngineProgress(m) {
+    if (!current || m.status !== 'recognizing text') return;
+    current.job.progress = m.progress;
+    paint(current.job);
+  }
+
+  async function processJob(job, worker) {
+    job.state = 'processing';
+    job.page = 0;
+    job.total = 0;
+    job.progress = 0;
+    paint(job);
+
+    const bytes = await job.file.arrayBuffer();
+    const doc = await pdfjsLib.getDocument({ data: bytes }).promise;
+    job.total = doc.numPages;
+
+    const pagesText = [];
+    const pagePdfs = [];
+
+    for (let n = 1; n <= doc.numPages; n++) {
+      job.page = n;
+      job.progress = 0;
+      paint(job);
+
+      const page = await doc.getPage(n);
+      const viewport = page.getViewport({ scale: RENDER_SCALE });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+
+      current = { job };
+      const { data } = await worker.recognize(canvas, {}, { text: true, pdf: true });
+      current = null;
+
+      if (!data.pdf) {
+        throw new Error('El motor OCR no devolvió el PDF de la página.');
+      }
+
+      pagesText.push(`=== Página ${n} ===\n${(data.text || '').trim()}`);
+      pagePdfs.push(data.pdf);
+
+      canvas.width = 0;
+      canvas.height = 0;
+      page.cleanup();
+    }
+
+    doc.destroy();
+
+    const merged = await PDFLib.PDFDocument.create();
+    for (const pageBytes of pagePdfs) {
+      const src = await PDFLib.PDFDocument.load(pageBytes);
+      const [copied] = await merged.copyPages(src, [0]);
+      merged.addPage(copied);
+    }
+    const mergedBytes = await merged.save();
+
+    job.text = pagesText.join('\n\n');
+    job.txtBlob = new Blob([job.text], { type: 'text/plain;charset=utf-8' });
+    job.pdfBlob = new Blob([mergedBytes], { type: 'application/pdf' });
+    job.state = 'done';
+    job.progress = 1;
+    paint(job);
+  }
+
+  async function runPending() {
+    const pending = jobs.filter(j => j.state === 'pending');
+    if (!pending.length || running) return;
+
+    running = true;
+    refreshControls();
+    setStatus('Cargando el motor OCR (la primera vez puede tardar)…');
+
+    let worker = null;
+    try {
+      worker = await Tesseract.createWorker(els.lang.value, 1, {
+        logger: onEngineProgress,
+      });
+      setStatus(`Procesando ${pending.length} archivo(s)…`);
+
+      for (const job of pending) {
+        try {
+          await processJob(job, worker);
+        } catch (err) {
+          current = null;
+          job.state = 'error';
+          job.error = err && err.message ? err.message : String(err);
+          paint(job);
+        }
+      }
+      setStatus('Proceso terminado.');
+    } catch (err) {
+      setStatus(`No se pudo iniciar el motor OCR: ${err.message || err}`);
+    } finally {
+      if (worker) await worker.terminate();
+      running = false;
+      refreshControls();
+    }
+  }
+
+  // ---------- Eventos ----------
+
+  els.input.addEventListener('change', e => {
+    addFiles(e.target.files);
+    e.target.value = '';
+  });
+
+  ['dragenter', 'dragover'].forEach(type =>
+    els.drop.addEventListener(type, e => {
+      e.preventDefault();
+      els.drop.classList.add('over');
+    })
+  );
+  ['dragleave', 'drop'].forEach(type =>
+    els.drop.addEventListener(type, e => {
+      e.preventDefault();
+      els.drop.classList.remove('over');
+    })
+  );
+  els.drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+
+  els.start.addEventListener('click', runPending);
+
+  // ---------- Arranque ----------
+
+  (async () => {
+    try {
+      await configurePdfJs();
+      setStatus('Listo. Selecciona tus PDF para comenzar.');
+    } catch (err) {
+      setStatus('No se pudieron cargar las librerías. Revisa tu conexión a internet.');
+    }
+    refreshControls();
+  })();
+</script>
+</body>
+</html>
