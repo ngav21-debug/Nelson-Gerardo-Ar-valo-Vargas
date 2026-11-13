@@ -14,6 +14,8 @@
   --accent: #1d6a51;
   --accent-soft: #dcebe4;
   --accent-ink: #ffffff;
+  --seal: #262626;
+  --seal-ink: #ffffff;
   --good: #2c7a4d;
   --warn: #9a5b00;
   --bad: #b3261e;
@@ -26,12 +28,14 @@
   :root:not([data-theme="light"]) {
     --paper: #0f1412; --surface: #161d1a; --sunk: #1d2622; --ink: #e3eae6; --muted: #98a59f;
     --line: #2a3530; --accent: #63c39b; --accent-soft: #1b3329; --accent-ink: #0b1411;
+    --seal: #e3eae6; --seal-ink: #0f1412;
     --good: #6cc48f; --warn: #e2a648; --bad: #f2786d; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0f1412; --surface: #161d1a; --sunk: #1d2622; --ink: #e3eae6; --muted: #98a59f;
   --line: #2a3530; --accent: #63c39b; --accent-soft: #1b3329; --accent-ink: #0b1411;
+  --seal: #e3eae6; --seal-ink: #0f1412;
   --good: #6cc48f; --warn: #e2a648; --bad: #f2786d; color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -41,19 +45,18 @@ body {
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 28px 48px;
 }
-.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 28px; }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 28px; }
 header.top { display: grid; gap: 6px; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 5vw, 42px); line-height: 1.1; margin: 0; text-wrap: balance; }
-.lede { margin: 0; max-width: 64ch; color: var(--muted); }
-.privacy { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink); background: var(--accent-soft); border-radius: 999px; padding: 4px 12px; width: fit-content; }
+.lede { margin: 0; max-width: 68ch; color: var(--muted); }
+.privacy { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink); background: var(--accent-soft); border-radius: 999px; padding: 4px 12px; width: fit-content; max-width: 100%; }
 .privacy svg { flex: none; }
 
 .desk { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: start; }
-@media (max-width: 820px) { .desk { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) { .desk { grid-template-columns: minmax(0, 1fr); } }
 
-.tray { display: grid; gap: 20px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
-@media (max-width: 820px) { .tray { position: static; } }
+.tray { display: grid; gap: 22px; }
 
 .drop {
   border: 1.5px dashed var(--line); border-radius: var(--r); background: var(--surface); padding: 28px 20px;
@@ -64,18 +67,23 @@ h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 
 .drop span { color: var(--muted); font-size: 13px; }
 .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 14px; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 14px; min-width: 0; }
 legend { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0; margin-bottom: 10px; }
 .field { display: grid; gap: 6px; }
-.field label, .check label { font-size: 14px; font-weight: 500; }
+.field > label, .check label { font-size: 14px; font-weight: 500; }
 .hint { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
-select {
+select, textarea, input[type="text"], input[type="number"] {
   font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--r); padding: 8px 10px; width: 100%;
+  border-radius: var(--r); padding: 8px 10px; width: 100%; min-width: 0;
 }
+textarea { resize: vertical; min-height: 64px; font-size: 13.5px; }
 .check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: start; }
-.check input { margin-top: 4px; accent-color: var(--accent); width: 16px; height: 16px; }
+.check input, .cats input, .ent-table input { margin-top: 4px; accent-color: var(--accent); width: 16px; height: 16px; }
 .check .hint { grid-column: 2; }
+.cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
+.cats label { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; }
+.cats label input { margin-top: 3px; flex: none; }
+.sep { border-top: 1px solid var(--line); padding-top: 18px; }
 
 button {
   font: inherit; font-size: 14px; font-weight: 500; border-radius: var(--r); padding: 8px 14px; cursor: pointer;
@@ -84,8 +92,11 @@ button {
 button:hover:not(:disabled) { border-color: var(--accent); }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 button.primary:hover:not(:disabled) { filter: brightness(1.08); }
+button.seal { background: var(--seal); border-color: var(--seal); color: var(--seal-ink); }
+button.seal:hover:not(:disabled) { filter: brightness(1.15); }
+button.small { font-size: 13px; padding: 6px 10px; }
 button:disabled { opacity: .5; cursor: not-allowed; }
-button:focus-visible, select:focus-visible, input:focus-visible, .drop:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, .drop:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .engine { font-family: var(--font-mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 4px; }
 .engine b { color: var(--ink); font-weight: 500; }
@@ -100,13 +111,12 @@ button:focus-visible, select:focus-visible, input:focus-visible, .drop:focus-vis
 .card.example { border-style: dashed; }
 .card-top { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
 .fname { font-weight: 600; font-size: 15.5px; overflow-wrap: anywhere; min-width: 0; }
-.meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .pill { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
 .pill.run { color: var(--accent); }
 .pill.ok { color: var(--good); }
 .pill.err { color: var(--bad); }
-.pill.ex { color: var(--muted); }
-.pill.wait { color: var(--muted); }
+.pill.ex, .pill.wait { color: var(--muted); }
 
 .bar { height: 6px; background: var(--sunk); border-radius: 999px; overflow: hidden; }
 .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
@@ -115,23 +125,49 @@ button:focus-visible, select:focus-visible, input:focus-visible, .drop:focus-vis
 .conf { display: grid; gap: 6px; }
 .conf-label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
 .strip { display: flex; gap: 2px; height: 26px; align-items: flex-end; overflow-x: auto; }
-.strip span { flex: 1 0 6px; max-width: 22px; min-width: 6px; border-radius: 2px 2px 0 0; background: var(--good); position: relative; }
+.strip span { flex: 1 0 6px; max-width: 22px; min-width: 6px; border-radius: 2px 2px 0 0; background: var(--good); }
 .strip span.mid { background: var(--warn); }
 .strip span.low { background: var(--bad); }
 .strip span.nat { background: var(--muted); }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
-.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; }
 
+.group { display: grid; gap: 8px; }
+.group-label { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .note { font-size: 13px; color: var(--muted); }
 .note.err { color: var(--bad); }
 .note.ok { color: var(--good); }
 
-details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--accent); width: fit-content; }
+.anon { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 12px; min-width: 0; }
+.anon-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
+.anon-head strong { font-size: 14.5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 2px 8px; border-radius: 4px; background: var(--sunk); color: var(--ink); font-variant-numeric: tabular-nums; }
+.table-wrap { overflow: auto; max-height: 340px; border: 1px solid var(--line); border-radius: var(--r); }
+.ent-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ent-table th { position: sticky; top: 0; background: var(--sunk); text-align: left; font-weight: 500; font-size: 12px; color: var(--muted); padding: 7px 10px; white-space: nowrap; }
+.ent-table td { padding: 7px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+.ent-table td.orig { overflow-wrap: anywhere; min-width: 160px; }
+.ent-table td.orig small { display: block; color: var(--muted); font-size: 12px; }
+.ent-table td.lab { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.ent-table td.num { font-variant-numeric: tabular-nums; text-align: right; }
+.ent-table td.zero { color: var(--bad); }
+.ent-table tr.off td:not(:first-child) { opacity: .45; text-decoration: line-through; }
+.type { font-size: 11.5px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+.add-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 150px) auto; gap: 8px; }
+@media (max-width: 520px) { .add-row { grid-template-columns: minmax(0, 1fr); } }
+.prev { display: grid; gap: 10px; }
+.prev-ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+.prev-ctl input { width: 84px; }
+.prev img { max-width: 100%; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+
+details > summary { cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--accent); width: fit-content; }
 .md-out {
   margin: 10px 0 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; background: var(--sunk); color: var(--ink);
   border-radius: var(--r); padding: 14px; max-height: 420px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
 }
+.redact { background: var(--seal); color: var(--seal-ink); padding: 0 4px; border-radius: 2px; }
 
 .limits { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; max-width: 80ch; }
 .limits h3 { font-size: 13px; font-family: var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin: 0 0 4px; font-weight: 500; }
@@ -142,12 +178,12 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
 
 <div class="wrap">
   <header class="top">
-    <div class="eyebrow">PDF escaneado → Markdown · PDF/A-2b</div>
+    <div class="eyebrow">PDF → Markdown · Word · PDF/A-2b · versión anonimizada</div>
     <h1>Folio OCR</h1>
-    <p class="lede">Lee PDF escaneados o nativos, reconoce el texto página por página y entrega dos salidas: un Markdown con marcas de página para trabajar el expediente y un PDF/A-2b con capa de texto buscable para archivo.</p>
+    <p class="lede">Lee PDF escaneados o nativos, reconoce el texto página por página y entrega el documento en Markdown, Word y PDF/A. Si lo pides, prepara además una versión anonimizada que conserva el formato de las páginas originales, con los datos personales tachados sobre la imagen.</p>
     <div class="privacy">
       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1 2.5 3v4.2c0 3.4 2.3 6.4 5.5 7.8 3.2-1.4 5.5-4.4 5.5-7.8V3L8 1Zm0 1.6 4 1.5v3.1c0 2.6-1.6 5-4 6.2-2.4-1.2-4-3.6-4-6.2V4.1l4-1.5Z"/></svg>
-      El OCR corre en este navegador. Los PDF no se suben a ningún servidor.
+      Todo corre en este navegador. Los PDF no se suben a ningún servidor.
     </div>
   </header>
 
@@ -161,7 +197,7 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
       </label>
 
       <fieldset>
-        <legend>Ajustes de lectura</legend>
+        <legend>Lectura</legend>
         <div class="field">
           <label for="lang">Idioma del documento</label>
           <select id="lang">
@@ -179,7 +215,7 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
           </select>
         </div>
         <div class="field">
-          <label for="color">Imagen en el PDF/A</label>
+          <label for="color">Imagen en los PDF</label>
           <select id="color">
             <option value="gray" selected>Escala de grises</option>
             <option value="color">Color (sellos, firmas, resaltados)</option>
@@ -188,7 +224,46 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
         <div class="check">
           <input type="checkbox" id="native" checked>
           <label for="native">Usar el texto nativo cuando la página lo tenga</label>
-          <span class="hint">Solo para el Markdown. Las páginas digitales conservan su texto exacto; las escaneadas pasan por OCR. El PDF/A siempre lleva capa OCR.</span>
+          <span class="hint">Para Markdown y Word. Las páginas digitales conservan su texto exacto; las escaneadas pasan por OCR.</span>
+        </div>
+      </fieldset>
+
+      <fieldset class="sep">
+        <legend>Anonimización</legend>
+        <div class="check">
+          <input type="checkbox" id="anonOn" checked>
+          <label for="anonOn">Preparar versión anonimizada</label>
+          <span class="hint">Detecta los datos, te deja revisarlos y genera Markdown, Word y PDF/A con el mismo formato de páginas del original.</span>
+        </div>
+        <div class="field">
+          <label for="anonStyle">Reemplazar por</label>
+          <select id="anonStyle">
+            <option value="tag" selected>Etiqueta numerada · [PERSONA 1]</option>
+            <option value="ini">Iniciales en personas · J. P. G.</option>
+            <option value="bar">Tachado sin texto · █████</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="hint" style="font-weight:500;color:var(--ink);font-size:14px">Qué buscar</span>
+          <div class="cats">
+            <label><input type="checkbox" data-cat="PER" checked>Nombres de personas</label>
+            <label><input type="checkbox" data-cat="DOC" checked>Documentos de identidad</label>
+            <label><input type="checkbox" data-cat="TEL" checked>Teléfonos</label>
+            <label><input type="checkbox" data-cat="MAIL" checked>Correos</label>
+            <label><input type="checkbox" data-cat="DIR" checked>Direcciones, barrios y veredas</label>
+            <label><input type="checkbox" data-cat="PLACA" checked>Placas de vehículos</label>
+            <label><input type="checkbox" data-cat="CTA" checked>Cuentas bancarias</label>
+            <label><input type="checkbox" data-cat="RAD">Radicados y expedientes</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="anonAlways">Anonimizar siempre</label>
+          <textarea id="anonAlways" rows="3" placeholder="Un dato por línea. Ej.: nombre del quejoso, apodos, nombre de una finca"></textarea>
+        </div>
+        <div class="field">
+          <label for="anonNever">No anonimizar</label>
+          <textarea id="anonNever" rows="2" placeholder="Un dato por línea. Ej.: Procuraduría Provincial de Tunja"></textarea>
+          <span class="hint">Los cambios en esta sección se aplican de inmediato a los archivos ya leídos.</span>
         </div>
       </fieldset>
 
@@ -206,7 +281,7 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
       <div id="list">
         <article class="card example" id="example" aria-label="Ejemplo de resultado">
           <div class="card-top">
-            <div class="fname">queja_anonima_rad_ejemplo.pdf</div>
+            <div class="fname">queja_anonima_ejemplo.pdf</div>
             <span class="pill ex">Ejemplo</span>
           </div>
           <div class="meta">6 páginas · 300 ppp · 4 OCR, 2 texto nativo · 1,2 MB → PDF/A 0,9 MB</div>
@@ -216,37 +291,33 @@ details.preview summary { cursor: pointer; font-size: 13.5px; font-weight: 500; 
               <span style="height:94%"></span><span style="height:91%"></span><span class="nat" style="height:100%"></span><span class="nat" style="height:100%"></span><span class="mid" style="height:72%"></span><span style="height:93%"></span>
             </div>
           </div>
-          <div class="actions">
-            <button class="primary" disabled>Guardar Markdown</button>
-            <button disabled>Guardar PDF/A</button>
-            <button disabled>Copiar Markdown</button>
+          <div class="group">
+            <div class="group-label">Documento completo</div>
+            <div class="actions">
+              <button class="primary" disabled>Word</button>
+              <button disabled>PDF/A</button>
+              <button disabled>Markdown</button>
+            </div>
           </div>
-          <details class="preview" open>
-            <summary>Vista del Markdown (ejemplo)</summary>
-<pre class="md-out">---
-titulo: "queja_anonima_rad_ejemplo"
-archivo_origen: "queja_anonima_rad_ejemplo.pdf"
-paginas: 6
-fecha_conversion: "2026-11-11T15:04:12Z"
-motor_ocr: "Tesseract 5 LSTM (spa), 300 ppp"
-confianza_ocr_media: 88.0
----
-
-# queja_anonima_rad_ejemplo
-
----
-**Página 1** · OCR · confianza 94 %
-
-### SEÑORES PROCURADURÍA GENERAL DE LA NACIÓN
-
-Asunto: queja contra funcionario de la secretaría de
-obras por presuntas irregularidades en el contrato ...
-
----
-**Página 5** · OCR · confianza 72 %
-
-> **Revisar:** confianza OCR baja en esta página. Coteja con el original antes de citarla.</pre>
-          </details>
+          <div class="anon">
+            <div class="anon-head"><strong>Versión anonimizada</strong><div class="chips"><span class="chip">3 personas</span><span class="chip">2 documentos</span><span class="chip">1 teléfono</span></div></div>
+            <div class="table-wrap">
+              <table class="ent-table">
+                <thead><tr><th>Usar</th><th>Tipo</th><th>Texto detectado</th><th>Reemplazo</th><th>Veces</th></tr></thead>
+                <tbody>
+                  <tr><td><input type="checkbox" checked disabled aria-label="Usar"></td><td class="type">Persona</td><td class="orig">Nombre De Ejemplo Uno<small>también: Ejemplo Uno</small></td><td class="lab">[PERSONA 1]</td><td class="num">4</td></tr>
+                  <tr><td><input type="checkbox" checked disabled aria-label="Usar"></td><td class="type">Documento</td><td class="orig">1.000.000.000</td><td class="lab">[DOCUMENTO 1]</td><td class="num">2</td></tr>
+                  <tr><td><input type="checkbox" checked disabled aria-label="Usar"></td><td class="type">Teléfono</td><td class="orig">300 000 0000</td><td class="lab">[TELÉFONO 1]</td><td class="num">1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="actions">
+              <button class="seal" disabled>Word anonimizado</button>
+              <button disabled>PDF/A anonimizado</button>
+              <button disabled>Markdown anonimizado</button>
+              <button disabled>Tabla de equivalencias</button>
+            </div>
+          </div>
         </article>
       </div>
 
@@ -254,9 +325,11 @@ obras por presuntas irregularidades en el contrato ...
         <h3>Antes de usar el resultado</h3>
         <ul>
           <li>El OCR comete errores, sobre todo en manuscritos, sellos, tablas y fotocopias tenues. Coteja con el original toda cita textual que vaya a un auto o a un escrito.</li>
-          <li>El PDF/A se arma con la estructura de la parte 2, nivel B (metadatos XMP, perfil sRGB incrustado, sin cifrado ni transparencias). Los archivos de prueba pasaron la validación de veraPDF para PDF/A-2b, pero si el documento va a un repositorio que exige conformidad, valida cada archivo con veraPDF.</li>
-          <li>Las páginas se guardan como imagen más una capa de texto invisible. Las firmas digitales del original no se conservan.</li>
-          <li>Un expediente de cientos de páginas puede tardar varios minutos. Deja la pestaña abierta mientras trabaja.</li>
+          <li>La anonimización busca patrones y nombres en el texto reconocido. No tacha firmas manuscritas, fotos, huellas ni datos que el OCR leyó mal. Revisa la tabla y la vista previa de cada página antes de entregar un documento.</li>
+          <li>El tachado se hace sobre la imagen de la página y el texto original no queda debajo. El PDF anonimizado no se puede “destachar”.</li>
+          <li>La tabla de equivalencias contiene los datos reales. Guárdala con la misma reserva del expediente y nunca la anexes a la versión anonimizada.</li>
+          <li>Los PDF salen en PDF/A-2b (metadatos XMP, perfil sRGB incrustado, sin cifrado). Los archivos de prueba pasaron veraPDF, pero si el documento va a un repositorio que exige conformidad, valida cada archivo.</li>
+          <li>Las páginas se guardan como imagen con una capa de texto invisible. Las firmas digitales del original no se conservan.</li>
         </ul>
       </div>
     </section>
@@ -266,17 +339,21 @@ obras por presuntas irregularidades en el contrato ...
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (() => {
   "use strict";
   const BASE = new URL("./", location.href).href;
   const SRGB_ICC_B64 = "AAACTGxjbXMEQAAAbW50clJHQiBYWVogB+oACwALABQAMAAQYWNzcEFQUEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPbWAAEAAAAA0y1sY21zAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALZGVzYwAAAQgAAAA2Y3BydAAAAUAAAABMd3RwdAAAAYwAAAAUY2hhZAAAAaAAAAAsclhZWgAAAcwAAAAUYlhZWgAAAeAAAAAUZ1hZWgAAAfQAAAAUclRSQwAAAggAAAAgZ1RSQwAAAggAAAAgYlRSQwAAAggAAAAgY2hybQAAAigAAAAkbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABzAFIARwBCACAAYgB1AGkAbAB0AC0AaQBuAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAADAAAAAcAE4AbwAgAGMAbwBwAHkAcgBpAGcAaAB0ACwAIAB1AHMAZQAgAGYAcgBlAGUAbAB5WFlaIAAAAAAAAPbWAAEAAAAA0y1zZjMyAAAAAAABDEIAAAXe///zJQAAB5MAAP2Q///7of///aIAAAPcAADAblhZWiAAAAAAAABvoAAAOPUAAAOQWFlaIAAAAAAAACSfAAAPhAAAtsNYWVogAAAAAAAAYpcAALeHAAAY2XBhcmEAAAAAAAMAAAACZmYAAPKnAAANWQAAE9AAAApbY2hybQAAAAAAAwAAAACj1wAAVHsAAEzNAACZmgAAJmYAAA9c";
   const LOW = 70, MID = 85;
+  const S0 = "", S1 = "";
 
   const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const fmtMB = (n) => (n / 1048576).toLocaleString("es-CO", { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + " MB";
   const pct = (n) => Math.round(n) + " %";
+  const fold = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const engineState = $("#engineState");
 
   if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = BASE + "vendor/pdf.worker.min.js";
@@ -284,8 +361,7 @@ obras por presuntas irregularidades en el contrato ...
   // ---------- Motor OCR ----------
   let ocr = { worker: null, key: "", progress: null };
   async function getWorker(lang, dpi) {
-    const key = lang;
-    if (ocr.worker && ocr.key === key) { await ocr.worker.setParameters({ user_defined_dpi: String(dpi) }); return ocr.worker; }
+    if (ocr.worker && ocr.key === lang) { await ocr.worker.setParameters({ user_defined_dpi: String(dpi) }); return ocr.worker; }
     if (ocr.worker) { try { await ocr.worker.terminate(); } catch (_) {} ocr.worker = null; }
     engineState.textContent = "Estado: cargando motor y modelo de idioma…";
     const w = await Tesseract.createWorker(lang, 1, {
@@ -298,7 +374,7 @@ obras por presuntas irregularidades en el contrato ...
       logger: (m) => { if (m.status === "recognizing text" && ocr.progress) ocr.progress(m.progress); }
     });
     await w.setParameters({ user_defined_dpi: String(dpi), preserve_interword_spaces: "1" });
-    ocr.worker = w; ocr.key = key;
+    ocr.worker = w; ocr.key = lang;
     engineState.textContent = "Estado: listo (" + lang + ")";
     return w;
   }
@@ -319,11 +395,7 @@ obras por presuntas irregularidades en el contrato ...
     const files = [...(list || [])].filter((f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf");
     if (!files.length) return;
     const ex = $("#example"); if (ex) ex.remove();
-    for (const f of files) {
-      const job = makeJob(f);
-      queue.push(job);
-      $("#list").prepend(job.ui.card);
-    }
+    for (const f of files) { const job = makeJob(f); queue.push(job); $("#list").prepend(job.ui.card); }
     updateSummary();
     run();
   }
@@ -333,6 +405,18 @@ obras por presuntas irregularidades en el contrato ...
     const pending = queue.filter((j) => j.state === "wait" || j.state === "run").length;
     $("#summary").textContent = queue.length + (queue.length === 1 ? " archivo" : " archivos") + " · " + done + " listos" + (pending ? " · " + pending + " en curso o en cola" : "");
   }
+
+  const TYPES = {
+    PER: { tag: "PERSONA", name: "Persona", plural: "personas" },
+    DOC: { tag: "DOCUMENTO", name: "Documento", plural: "documentos" },
+    TEL: { tag: "TELÉFONO", name: "Teléfono", plural: "teléfonos" },
+    MAIL: { tag: "CORREO", name: "Correo", plural: "correos" },
+    DIR: { tag: "DIRECCIÓN", name: "Dirección", plural: "direcciones" },
+    PLACA: { tag: "PLACA", name: "Placa", plural: "placas" },
+    CTA: { tag: "CUENTA", name: "Cuenta", plural: "cuentas" },
+    RAD: { tag: "RADICADO", name: "Radicado", plural: "radicados" },
+    OTRO: { tag: "DATO", name: "Otro", plural: "otros" }
+  };
 
   function makeJob(file) {
     const card = el("article", "card");
@@ -344,31 +428,39 @@ obras por presuntas irregularidades en el contrato ...
     const bar = el("div", "bar"); const fill = el("i"); bar.append(fill);
     const step = el("div", "step", "Esperando turno");
     const conf = el("div", "conf"); conf.hidden = true;
-    const confLabel = el("div", "conf-label"); const cl1 = el("span", null, "Confianza OCR por página"), cl2 = el("span"); confLabel.append(cl1, cl2);
+    const confLabel = el("div", "conf-label"); const cl2 = el("span"); confLabel.append(el("span", null, "Confianza OCR por página"), cl2);
     const strip = el("div", "strip");
     const legend = el("div", "legend");
     legend.innerHTML = '<span><i style="background:var(--good)"></i>≥ 85 %</span><span><i style="background:var(--warn)"></i>70–84 %</span><span><i style="background:var(--bad)"></i>&lt; 70 %</span><span><i style="background:var(--muted)"></i>texto nativo</span>';
     conf.append(confLabel, strip, legend);
-    const actions = el("div", "actions");
-    const bMd = el("button", "primary", "Guardar Markdown");
-    const bPdf = el("button", null, "Guardar PDF/A");
-    const bCopy = el("button", null, "Copiar Markdown");
-    const bCancel = el("button", null, "Detener");
-    [bMd, bPdf, bCopy].forEach((b) => (b.disabled = true));
-    actions.append(bMd, bPdf, bCopy, bCancel);
-    const note = el("div", "note"); note.hidden = true;
-    const det = el("details", "preview"); det.hidden = true;
-    const sum = el("summary", null, "Ver Markdown"); const pre = el("pre", "md-out"); det.append(sum, pre);
-    card.append(top, meta, bar, step, conf, actions, note, det);
+    const bCancel = el("button", "small", "Detener");
 
-    const job = { file, state: "wait", cancel: false, md: "", pdfa: null, ui: { card, pill, meta, fill, bar, step, conf, cl2, strip, note, det, pre, bMd, bPdf, bCopy, bCancel } };
+    const full = el("div", "group"); full.hidden = true;
+    full.append(el("div", "group-label", "Documento completo"));
+    const fa = el("div", "actions");
+    const bDocx = el("button", "primary", "Word");
+    const bPdf = el("button", null, "PDF/A");
+    const bMd = el("button", null, "Markdown");
+    const bCopy = el("button", null, "Copiar Markdown");
+    fa.append(bDocx, bPdf, bMd, bCopy); full.append(fa);
+
+    const anon = el("div", "anon"); anon.hidden = true;
+    const note = el("div", "note"); note.hidden = true;
+    const det = el("details"); det.hidden = true;
+    const pre = el("pre", "md-out"); det.append(el("summary", null, "Ver Markdown"), pre);
+    card.append(top, meta, bar, step, conf, bCancel, full, anon, note, det);
+
+    const job = { file, state: "wait", cancel: false, pages: [], md: "", pdfa: null, manual: [], disabled: new Set(), entities: [], rules: [], version: 0, cache: {},
+      ui: { card, pill, meta, fill, bar, step, conf, cl2, strip, note, det, pre, bCancel, full, anon } };
     const base = file.name.replace(/\.pdf$/i, "");
+    job.base = base;
     bCancel.addEventListener("click", () => {
-      if (job.state === "wait") { job.state = "cancel"; setPill(job, "err", "Cancelado"); step.textContent = "Cancelado antes de empezar"; bCancel.disabled = true; updateSummary(); }
+      if (job.state === "wait") { job.state = "cancel"; setPill(job, "err", "Cancelado"); step.textContent = "Cancelado antes de empezar"; bCancel.hidden = true; updateSummary(); }
       else { job.cancel = true; bCancel.disabled = true; step.textContent = "Deteniendo al terminar la página actual…"; }
     });
-    bMd.addEventListener("click", () => save(job, base + ".md", job.md));
-    bPdf.addEventListener("click", () => save(job, base + "_PDFA.pdf", new Blob([job.pdfa], { type: "application/pdf" })));
+    bMd.addEventListener("click", () => offer(job, base + ".md", async () => job.md));
+    bDocx.addEventListener("click", () => offer(job, base + ".docx", () => buildDocx(job, false)));
+    bPdf.addEventListener("click", () => offer(job, base + "_PDFA.pdf", async () => new Blob([job.pdfa], { type: "application/pdf" })));
     bCopy.addEventListener("click", () => copy(job));
     return job;
   }
@@ -377,16 +469,20 @@ obras por presuntas irregularidades en el contrato ...
   function showNote(job, cls, text) { const n = job.ui.note; n.className = "note " + cls; n.textContent = text; n.hidden = false; }
 
   let downloadsNs;
-  async function save(job, filename, data) {
+  async function offer(job, filename, build) {
     try {
       if (downloadsNs === undefined) downloadsNs = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
       if (!downloadsNs) { showNote(job, "err", "Esta vista no permite guardar archivos. Abre el artefacto en claude.ai o usa Copiar Markdown."); return; }
+      showNote(job, "", "Preparando " + filename + "…");
+      const data = await build();
       await downloadsNs.save({ filename, data });
       showNote(job, "ok", "Guardado: " + filename);
     } catch (e) {
+      console.error(e);
       const code = e && e.code;
       if (code === "declined") showNote(job, "", "No se guardó " + filename + ".");
       else if (code === "rate_limited") showNote(job, "", "Ya hay una confirmación de descarga abierta. Respóndela y vuelve a intentar.");
+      else if (code === "extension_not_enabled" || code === "rejected_extension") showNote(job, "err", "Esta vista no permite guardar archivos " + filename.split(".").pop().toUpperCase() + ". Prueba con otro formato.");
       else showNote(job, "err", "No se pudo guardar " + filename + (e && e.message ? ": " + e.message : "."));
     }
   }
@@ -414,7 +510,7 @@ obras por presuntas irregularidades en el contrato ...
           job.state = "err"; setPill(job, "err", "Error");
           job.ui.step.textContent = "";
           showNote(job, "err", explain(e));
-          job.ui.bCancel.disabled = true;
+          job.ui.bCancel.hidden = true;
         }
         updateSummary();
       }
@@ -433,23 +529,24 @@ obras por presuntas irregularidades en el contrato ...
   async function processJob(job) {
     const { ui, file } = job;
     const lang = $("#lang").value, dpi = +$("#dpi").value, color = $("#color").value, useNative = $("#native").checked;
+    job.opts = { lang, dpi, color };
     setPill(job, "run", "Leyendo");
     ui.step.textContent = "Abriendo el PDF…";
     const buf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), isEvalSupported: false, useSystemFonts: true }).promise;
     const n = pdf.numPages;
+    job.total = n;
     ui.meta.textContent = n + (n === 1 ? " página" : " páginas") + " · " + dpi + " ppp · " + fmtMB(file.size);
     ui.step.textContent = "Preparando el motor OCR…";
     const worker = await getWorker(lang, dpi);
     ui.conf.hidden = false;
 
-    const pages = [];
-    const scale = dpi / 72;
+    const pages = job.pages;
     for (let i = 1; i <= n; i++) {
       if (job.cancel) break;
       const page = await pdf.getPage(i);
       const vp1 = page.getViewport({ scale: 1 });
-      let s = scale;
+      let s = dpi / 72;
       const maxSide = 6000;
       if (Math.max(vp1.width, vp1.height) * s > maxSide) s = maxSide / Math.max(vp1.width, vp1.height);
       const vp = page.getViewport({ scale: s });
@@ -461,11 +558,11 @@ obras por presuntas irregularidades en el contrato ...
       await page.render({ canvasContext: ctx, viewport: vp, background: "#ffffff" }).promise;
       if (color === "gray") toGray(ctx, canvas.width, canvas.height);
 
-      let native = null;
+      let nativeLines = null;
       if (useNative) {
         const tc = await page.getTextContent();
         const chars = tc.items.reduce((a, it) => a + (it.str ? it.str.replace(/\s/g, "").length : 0), 0);
-        if (chars >= 40) native = nativeToMd(tc, vp1);
+        if (chars >= 40) nativeLines = nativeLayout(tc, vp);
       }
 
       ui.step.textContent = "Página " + i + " de " + n + " · reconociendo texto";
@@ -473,44 +570,55 @@ obras por presuntas irregularidades en el contrato ...
       const { data } = await worker.recognize(canvas, { pdfTitle: file.name, pdfTextOnly: true }, { text: true, blocks: true, hocr: false, tsv: false, pdf: true });
       ocr.progress = null;
       const jpg = await canvasToJpeg(canvas, color === "gray" ? 0.8 : 0.85);
+      const cw = canvas.width, ch = canvas.height;
       canvas.width = canvas.height = 0;
       const conf = typeof data.confidence === "number" ? data.confidence : 0;
+      const ocrLines = ocrLayout(data);
       const hasOcrText = (data.text || "").trim().length > 0;
-      pages.push({
-        index: i, wPt: vp1.width, hPt: vp1.height, jpg, textPdf: data.pdf ? new Uint8Array(data.pdf) : null,
-        conf, native, md: native != null ? native : ocrToMd(data), source: native != null ? "nativo" : "OCR", empty: !hasOcrText && native == null
-      });
-      addStripBar(job, pages[pages.length - 1]);
+      const isNative = nativeLines != null && nativeLines.length > 0;
+      const p = {
+        index: i, wPt: vp1.width, hPt: vp1.height, cw, ch, jpg, textPdf: data.pdf ? new Uint8Array(data.pdf) : null, conf,
+        source: isNative ? "nativo" : "OCR",
+        blocks: isNative ? nativeBlocks(nativeLines) : ocrBlocks(data),
+        lines: isNative ? nativeLines : ocrLines,
+        alt: isNative ? ocrLines : null,
+        empty: !hasOcrText && !isNative
+      };
+      p.T = indexText(p.lines);
+      if (p.alt) p.A = indexText(p.alt);
+      pages.push(p);
+      addStripBar(job, p);
       ui.fill.style.width = (i / n * 100).toFixed(1) + "%";
       page.cleanup();
     }
     await pdf.destroy();
-    if (!pages.length) { job.state = "cancel"; setPill(job, "err", "Detenido"); ui.step.textContent = "Detenido sin páginas procesadas"; return; }
+    if (!pages.length) { job.state = "cancel"; setPill(job, "err", "Detenido"); ui.step.textContent = "Detenido sin páginas procesadas"; ui.bCancel.hidden = true; return; }
 
     ui.step.textContent = "Armando el PDF/A…";
-    const base = file.name.replace(/\.pdf$/i, "");
-    job.pdfa = await buildPdfA(pages, base);
-    job.md = buildMarkdown(pages, file.name, base, lang, dpi, n);
+    job.pdfa = await buildPdfA(job, false);
+    job.md = buildMarkdown(job, false);
 
-    const ocrPages = pages.filter((p) => p.source === "OCR" && !p.empty);
-    const avg = ocrPages.length ? ocrPages.reduce((a, p) => a + p.conf, 0) / ocrPages.length : null;
-    const nat = pages.filter((p) => p.source === "nativo").length;
+    const ocrPages = pages.filter((q) => q.source === "OCR" && !q.empty);
+    const avg = ocrPages.length ? ocrPages.reduce((a, q) => a + q.conf, 0) / ocrPages.length : null;
+    const nat = pages.filter((q) => q.source === "nativo").length;
     ui.cl2.textContent = avg == null ? "sin páginas OCR" : "media " + pct(avg);
     ui.meta.textContent = n + (n === 1 ? " página" : " páginas") + (pages.length < n ? " (procesadas " + pages.length + ")" : "") + " · " + dpi + " ppp · " +
       (pages.length - nat) + " OCR, " + nat + " texto nativo · " + fmtMB(file.size) + " → PDF/A " + fmtMB(job.pdfa.byteLength);
     ui.pre.textContent = job.md;
     ui.det.hidden = false;
-    [ui.bMd, ui.bPdf, ui.bCopy].forEach((b) => (b.disabled = false));
+    ui.full.hidden = false;
     ui.bCancel.hidden = true;
     ui.bar.hidden = true;
-    const lows = pages.filter((p) => p.source === "OCR" && !p.empty && p.conf < LOW).map((p) => p.index);
-    const empties = pages.filter((p) => p.empty).map((p) => p.index);
+    const lows = pages.filter((q) => q.source === "OCR" && !q.empty && q.conf < LOW).map((q) => q.index);
+    const empties = pages.filter((q) => q.empty).map((q) => q.index);
     let msg = pages.length < n ? "Detenido en la página " + pages.length + " de " + n + ". Las salidas cubren solo esas páginas." : "Listo.";
     if (lows.length) msg += " Revisa a mano " + (lows.length === 1 ? "la página " : "las páginas ") + lows.join(", ") + " (confianza baja).";
     if (empties.length) msg += " Sin texto detectado en " + (empties.length === 1 ? "la página " : "las páginas ") + empties.join(", ") + ".";
     ui.step.textContent = msg;
     job.state = "ok";
     setPill(job, "ok", pages.length < n ? "Parcial" : "Listo");
+    buildAnonUI(job);
+    refreshAnon(job);
   }
 
   function addStripBar(job, p) {
@@ -535,12 +643,66 @@ obras por presuntas irregularidades en el contrato ...
     return new Promise((res, rej) => canvas.toBlob((b) => (b ? b.arrayBuffer().then((a) => res(new Uint8Array(a)), rej) : rej(new Error("No se pudo codificar la imagen de la página"))), "image/jpeg", q));
   }
 
-  // ---------- Markdown ----------
-  const esc = (t) => t.replace(/^(\s*)([#>])/, "$1\\$2").replace(/^(\s*)(\d+)\.(\s)/, "$1$2.$3");
+  // ---------- Disposición del texto (palabras con cajas en píxeles) ----------
+  function ocrLayout(data) {
+    const lines = [];
+    for (const b of data.blocks || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) {
+      const words = (l.words || []).filter((w) => w.text && w.text.trim()).map((w) => ({ t: w.text.trim(), x0: w.bbox.x0, y0: w.bbox.y0, x1: w.bbox.x1, y1: w.bbox.y1 }));
+      if (words.length) lines.push({ words });
+    }
+    return lines;
+  }
+
+  function nativeLayout(tc, vp) {
+    const T = pdfjsLib.Util.transform;
+    const items = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const tx = T(vp.transform, it.transform);
+      const h = Math.hypot(tx[2], tx[3]) || 10;
+      const wpx = (it.width || 0) * vp.scale || it.str.length * h * 0.5;
+      items.push({ x: tx[4], y: tx[5], h, w: wpx, str: it.str });
+    }
+    items.sort((a, b) => (Math.abs(a.y - b.y) > Math.min(a.h, b.h) * 0.5 ? a.y - b.y : a.x - b.x));
+    const lines = [];
+    for (const it of items) {
+      const last = lines[lines.length - 1];
+      if (last && Math.abs(last.y - it.y) <= Math.max(2, it.h * 0.5)) { last.items.push(it); last.h = Math.max(last.h, it.h); }
+      else lines.push({ y: it.y, h: it.h, items: [it] });
+    }
+    return lines.map((l) => {
+      l.items.sort((a, b) => a.x - b.x);
+      const words = [];
+      for (const it of l.items) {
+        const len = it.str.length || 1;
+        const re = /\S+/g; let m;
+        while ((m = re.exec(it.str))) {
+          words.push({ t: m[0], x0: it.x + (m.index / len) * it.w, x1: it.x + ((m.index + m[0].length) / len) * it.w, y0: it.y - it.h * 0.92, y1: it.y + it.h * 0.28 });
+        }
+      }
+      return { words, size: l.h, y: l.y };
+    }).filter((l) => l.words.length);
+  }
+
+  // Texto de la página con el desplazamiento de cada palabra, para mapear coincidencias a cajas.
+  function indexText(lines) {
+    let s = ""; const map = [];
+    lines.forEach((l, li) => {
+      if (s) s += "\n";
+      l.words.forEach((w, wi) => {
+        if (wi) s += " ";
+        map.push({ s: s.length, e: s.length + w.t.length, li, w });
+        s += w.t;
+      });
+    });
+    return { s, map };
+  }
+
+  // ---------- Bloques de contenido (para Markdown y Word) ----------
   function joinLines(lines) {
     let out = "";
     for (const raw of lines) {
-      const l = raw.replace(/\s+$/g, "").replace(/^\s+/, "");
+      const l = raw.trim();
       if (!l) continue;
       if (!out) { out = l; continue; }
       if (/[A-Za-zÁÉÍÓÚÑáéíóúñ]-$/.test(out) && /^[a-záéíóúñü]/.test(l)) out = out.slice(0, -1) + l;
@@ -549,11 +711,10 @@ obras por presuntas irregularidades en el contrato ...
     return out;
   }
   const isListItem = (t) => /^([•·▪◦\-–*]|\d{1,3}[.)]|[a-zA-Z][.)]|[ivxlcdm]{1,5}[.)])\s+/i.test(t);
-  const normBullet = (t) => t.replace(/^[•·▪◦–*]\s+/, "- ");
   const isCaps = (t) => t.length <= 90 && /[A-ZÁÉÍÓÚÑ]{3}/.test(t) && t === t.toUpperCase() && !/[a-záéíóúñ]/.test(t);
 
-  function ocrToMd(data) {
-    const paras = [];
+  function ocrBlocks(data) {
+    const out = [];
     const heights = [];
     for (const b of data.blocks || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) heights.push(l.bbox.y1 - l.bbox.y0);
     heights.sort((a, b) => a - b);
@@ -562,124 +723,637 @@ obras por presuntas irregularidades en el contrato ...
       for (const p of b.paragraphs || []) {
         const lines = (p.lines || []).map((l) => (l.text || "").replace(/\n/g, ""));
         if (!lines.some((l) => l.trim())) continue;
-        const items = [];
-        let cur = [];
+        const items = []; let cur = [];
         for (const l of lines) { if (isListItem(l.trim()) && cur.length) { items.push(cur); cur = []; } cur.push(l); }
         if (cur.length) items.push(cur);
         const avgH = (p.lines || []).reduce((a, l) => a + (l.bbox.y1 - l.bbox.y0), 0) / Math.max(1, (p.lines || []).length);
         for (const it of items) {
-          const text = joinLines(it).trim();
+          const text = joinLines(it);
           if (!text) continue;
           const heading = it.length <= 2 && text.length <= 90 && !/[.;:,]$/.test(text) && ((med && avgH > med * 1.35) || isCaps(text)) && !isListItem(text);
-          if (heading) paras.push("### " + text.replace(/^#+\s*/, ""));
-          else if (isListItem(text)) paras.push(normBullet(text));
-          else paras.push(esc(text));
+          out.push({ k: heading ? "h" : isListItem(text) ? "li" : "p", s: text });
         }
       }
     }
-    return mergeBroken(paras).join("\n\n");
+    return mergeBroken(out);
   }
 
   // Tesseract a veces parte un párrafo en varios cuando el interlineado es amplio.
-  // Se unen si el anterior no cierra frase y el siguiente sigue en minúscula o cifra.
-  function mergeBroken(paras) {
+  function mergeBroken(blocks) {
     const out = [];
-    for (const p of paras) {
+    for (const b of blocks) {
       const prev = out[out.length - 1];
-      const plain = (t) => t && !t.startsWith("### ") && !/^(- |\d{1,3}[.)] )/.test(t);
-      if (prev && plain(prev) && plain(p) && !/[.:;!?»”"]$/.test(prev) && /^[a-záéíóúñü0-9(«“"]/.test(p)) {
-        out[out.length - 1] = /[A-Za-zÁÉÍÓÚÑáéíóúñ]-$/.test(prev) && /^[a-záéíóúñü]/.test(p) ? prev.slice(0, -1) + p : prev + " " + p;
-      } else out.push(p);
+      if (prev && prev.k === "p" && b.k === "p" && !/[.:;!?»”"]$/.test(prev.s) && /^[a-záéíóúñü0-9(«“"]/.test(b.s)) {
+        prev.s = /[A-Za-zÁÉÍÓÚÑáéíóúñ]-$/.test(prev.s) && /^[a-záéíóúñü]/.test(b.s) ? prev.s.slice(0, -1) + b.s : prev.s + " " + b.s;
+      } else out.push({ ...b });
     }
     return out;
   }
 
-  function nativeToMd(tc, vp1) {
-    const items = tc.items.filter((it) => it.str && it.str.trim()).map((it) => {
-      const [a, b, , d, e, f] = it.transform;
-      const size = Math.hypot(c0(a), c0(b)) || Math.abs(d) || 10;
-      return { x: e, y: f, size, str: it.str };
-    });
-    if (!items.length) return "";
-    items.sort((p, q) => (Math.abs(q.y - p.y) > Math.min(p.size, q.size) * 0.5 ? q.y - p.y : p.x - q.x));
-    const lines = [];
-    for (const it of items) {
-      const last = lines[lines.length - 1];
-      if (last && Math.abs(last.y - it.y) <= Math.max(2, it.size * 0.5)) { last.parts.push(it); last.size = Math.max(last.size, it.size); }
-      else lines.push({ y: it.y, size: it.size, parts: [it] });
-    }
-    for (const l of lines) { l.parts.sort((p, q) => p.x - q.x); l.text = l.parts.map((p) => p.str).join(" ").replace(/\s{2,}/g, " ").trim(); }
-    const sizes = lines.map((l) => l.size).sort((a, b) => a - b);
+  function nativeBlocks(lines) {
+    const texts = lines.map((l) => ({ t: l.words.map((w) => w.t).join(" "), size: l.size, y: l.y }));
+    const sizes = texts.map((l) => l.size).sort((a, b) => a - b);
     const med = sizes[Math.floor(sizes.length / 2)] || 10;
-    const paras = [];
-    let cur = null, prevY = null;
-    for (const l of lines) {
-      const gap = prevY == null ? 0 : prevY - l.y;
+    const paras = []; let cur = null, prevY = null;
+    for (const l of texts) {
+      const gap = prevY == null ? 0 : l.y - prevY;
       const big = l.size > med * 1.25;
-      const newPara = !cur || gap > l.size * 1.7 || big !== cur.big || isListItem(l.text);
-      if (newPara) { cur = { big, lines: [] }; paras.push(cur); }
-      cur.lines.push(l.text);
-      prevY = l.y;
+      if (!cur || gap > l.size * 1.7 || big !== cur.big || isListItem(l.t)) { cur = { big, lines: [] }; paras.push(cur); }
+      cur.lines.push(l.t); prevY = l.y;
     }
     return paras.map((p) => {
-      const t = joinLines(p.lines).trim();
-      if (!t) return "";
-      if ((p.big || isCaps(t)) && p.lines.length <= 2 && t.length <= 120 && !isListItem(t)) return "### " + t;
-      if (isListItem(t)) return normBullet(t);
-      return esc(t);
-    }).filter(Boolean).join("\n\n");
-    function c0(v) { return v || 0; }
+      const t = joinLines(p.lines);
+      if (!t) return null;
+      if ((p.big || isCaps(t)) && p.lines.length <= 2 && t.length <= 120 && !isListItem(t)) return { k: "h", s: t };
+      return { k: isListItem(t) ? "li" : "p", s: t };
+    }).filter(Boolean);
   }
 
-  function yamlStr(s) { return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'; }
+  // ---------- Detección de datos personales ----------
+  const STOP = new Set(fold(`
+    alcaldia gobernacion secretaria secretario procuraduria procurador personeria personero contraloria contralor fiscalia fiscal defensoria defensor
+    ministerio ministro viceministro municipio departamento concejo concejal asamblea diputado juzgado juez tribunal magistrado consejo corte rama policia
+    ejercito armada hospital clinica empresa entidad instituto universidad colegio escuela fundacion corporacion sociedad banco notaria notario registraduria registrador
+    superintendencia agencia unidad direccion director subdirector oficina despacho comision nacion nacional republica colombia general provincial regional
+    distrital municipal departamental estado ley leyes decreto articulo art resolucion auto autos codigo constitucion politica asunto referencia ref radicado expediente queja
+    contrato convenio calle carrera avenida barrio vereda bogota medellin cali barranquilla cartagena tunja bucaramanga cucuta pereira manizales ibague neiva pasto
+    villavicencio monteria sincelejo valledupar santa popayan armenia quibdo riohacha yopal mocoa leticia florencia arauca inirida mitu puerto san yo usted ustedes nosotros quien quienes
+    señor señora señores señoras doctor doctora cordial saludo atentamente cordialmente respetuosamente primero segundo tercero cuarto quinto sexto considerando
+    considerandos resuelve hechos pruebas peticion peticiones anexos fundamentos notifiquese comuniquese cumplase publiquese enero febrero marzo abril mayo junio julio
+    agosto septiembre setiembre octubre noviembre diciembre lunes martes miercoles jueves viernes sabado domingo alcalde gobernador gerente jefe coordinador inspector
+    comandante presidente rector supervisor interventor tesorero almacenista senador representante asesor profesional tecnico auxiliar contratista abogado abogada
+    firma nombre nombres cargo cedula identificacion telefono correo email celular fecha lugar ciudad asuntos varios total valor objeto plazo informe acta oficio
+    memorando circular sentencia providencia pliego cargos indagacion investigacion disciplinaria disciplinario previa apertura archivo descargos fallo
+    primera segunda instancia sala plena seccion subseccion ponente quejoso quejosa investigado investigada disciplinado disciplinada pgn ius sirius
+    medio control nulidad restablecimiento derecho reparacion directa tutela accion popular grupo cumplimiento la el los las del de y en con por para
+  `).split(/\s+/).filter(Boolean));
+  const GIVEN = new Set(fold(`
+    adriana alba albeiro alberto alejandra alejandro alexander alexandra alfonso alfredo alicia alirio alvaro amanda amparo ana andrea andres angel angela angelica
+    anibal antonio araceli arturo aurora beatriz benjamin bernardo bertha blanca brayan camila camilo carlos carmen carolina catalina cecilia cesar clara claudia
+    consuelo cristian cristina cristobal daniel daniela danilo david deisy diana diego dora doris duvan edgar edilberto eduardo edwin elena eliana elizabeth elsa
+    emilio enrique ernesto esperanza esteban estela fabian fabio fanny federico felipe fernando flor francisco gabriel gabriela german gilberto gladys gloria gonzalo
+    graciela guillermo gustavo hector helena heriberto hernan hernando hilda hugo humberto ignacio ines ingrid isabel ivan jaime jairo javier jeisson jenny jesus
+    jhon jhonatan jimena joaquin johana john jorge jose josefina juan juana juliana julian julio karen karina laura leidy leonardo leonor lida liliana lina lorena
+    lucia luis luisa luz manuel marcela marco marcos margarita maria mariana marina mario marleny marta martha mateo mauricio mercedes miguel milena miriam monica
+    nancy natalia nelson nestor nicolas nidia norma nubia ofelia olga omar orlando oscar pablo paola patricia paula pedro rafael ramiro ramon raul rebeca ricardo
+    roberto rocio rodrigo rosa rosalba rosario ruben ruth samuel sandra santiago sara sebastian sergio silvia sofia sonia stella susana teresa tomas valentina
+    valeria vanessa veronica victor victoria viviana walter wilson william wilmer yamile yaneth yenny yesenia yolanda yuli yurani zulma adolfo agustin aida
+    alexis alix amalia anderson armando belen bibiana carmenza celmira clemencia constanza cristhian dairo dario deyanira edith efrain elkin emma ever evelyn
+    faber franklin freddy gerardo gerson gina harold heidy holman ismael jacqueline jader janeth jeferson jefferson jennifer jessica jhonny johan jonathan
+    katherine kelly lady leonel lizeth luzmila maritza mayerly melissa miryam mireya nelly norberto octavio pilar reinaldo rigoberto rolando rubiela sindy
+    stefany tatiana uriel vladimir wilder yesid yineth yohana yuly zoraida
+  `).split(/\s+/).filter(Boolean));
+  const CONNS = new Set(["de", "del", "la", "las", "los", "y"]);
+  const CAPW = "[A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+|[A-ZÁÉÍÓÚÑÜ]{2,}";
+  const CONNP = "de\\s+la|de\\s+las|de\\s+los|del|de|DE\\s+LA|DE\\s+LAS|DE\\s+LOS|DEL|DE";
+  const NAME_SRC = `(?:${CAPW})(?:(?:[ \\t]+\\n?[ \\t]*|\\n[ \\t]*)(?:(?:${CONNP})\\s+)?(?:${CAPW})){0,4}`;
+  const isCapTok = (t) => /^([A-ZÁÉÍÓÚÑÜ][a-záéíóúñü]+|[A-ZÁÉÍÓÚÑÜ]{2,})$/u.test(t);
+  const isAcr = (t) => /^[A-ZÁÉÍÓÚÑÜ]{2,3}$/u.test(t) && !GIVEN.has(fold(t));
 
-  function buildMarkdown(pages, fileName, base, lang, dpi, total) {
+  function cleanName(s, min) {
+    let toks = s.replace(/\s+/g, " ").trim().split(" ").map((t) => t.replace(/[.,;:]+$/, "")).filter(Boolean);
+    while (toks.length && (STOP.has(fold(toks[0])) || CONNS.has(fold(toks[0])) || isAcr(toks[0]))) toks.shift();
+    const out = [];
+    for (const t of toks) { if (STOP.has(fold(t)) && !CONNS.has(fold(t))) break; if (isAcr(t)) break; out.push(t); }
+    while (out.length && CONNS.has(fold(out[out.length - 1]))) out.pop();
+    const core = out.filter((t) => !CONNS.has(fold(t)));
+    if (core.length < min || core.length > 6) return null;
+    return out.join(" ");
+  }
+
+  const RX = {
+    trig: /(?<![\p{L}])(señor(?:a|ita)?|sr\.?|sra\.?|srta\.?|don|doña|doctor(?:a)?|dr\.?|dra\.?|abogad[oa]|ciudadan[oa]|quejos[oa]|denunciante|testigo|declarante|investigad[oa]|disciplinad[oa]|implicad[oa]|menor|niñ[oa]|adolescente|paciente|apoderad[oa]|peticionari[oa]|accionante|demandante|demandad[oa]|funcionari[oa]|servidor(?:a)?\s+públic[oa]|suscrit[oa]|firmad[oa]\s+por|a\s+nombre\s+de|nombres?(?:\s+y\s+apellidos)?\s*:|firma\s*:|hij[oa]|espos[oa]|compañer[oa](?:\s+permanente)?|madre|padre|herman[oa]|ingenier[oa]|ing\.|licenciad[oa]|lic\.|profesor(?:a)?|docente|contra)(?![\p{L}])[\s,:]+/giu,
+    suf: /,?\s*(?:identificad[oa]s?(?![\p{L}])|mayor(?:es)?\s+de\s+edad|portador(?:a)?\s+de|quien\s+se\s+identific|con\s+c[ée]dula|c\.\s?c\.|vecin[oa]\s+de|domiciliad[oa])/giu,
+    doc: /(?<![\p{L}])(?:c[ée]dula(?:\s+de\s+(?:ciudadan[íi]a|extranjer[íi]a))?|c\.\s?c\.?|cc|t\.\s?i\.?|tarjeta\s+de\s+identidad|c\.\s?e\.?|pasaporte|nuip|nit|documento(?:\s+de\s+identidad)?|identificaci[óo]n)(?![\p{L}])[\s.:]*(?:(?:n[oº°]|nro|n[úu]mero)\.?\s*|#\s*)?([0-9][0-9.,\s\-]{4,18}[0-9])/giu,
+    dotted: /(?<![\d$.,])\d{1,3}(?:\.\d{3}){2,3}(?![.,]?\d)/gu,
+    tel: /(?<![\d])(?:\+?\s?57[\s\-]?)?(?:3\d{2}[\s\-.]?\d{3}[\s\-.]?\d{4}|\(?60\d\)?[\s\-.]?\d{3}[\s\-.]?\d{4})(?![\d])/gu,
+    telKw: /(?:tel[ée]fono|tel\.|cel(?:ular)?\.?|m[óo]vil|whats?app|contacto)[\s.:]*(?:n[oº°]\.?\s*|#\s*)?(\+?\d[\d\s\-.()]{5,16}\d)/giu,
+    mail: /[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+/gu,
+    mailOcr: /(?<![\w@])[\w.+\-]{2,}(?:Q|©|\(at\))[a-z0-9\-]+(?:\.[a-z0-9\-]+)*\.(?:com|co|org|net|edu|gov|info|es)(?:\.co)?(?![\w])/gu,
+    mailKw: /(?:correo(?:\s+electr[óo]nico)?|e-?mail)\s*:?\s*([^\s,;:]+\.[a-z]{2,4}(?:\.[a-z]{2})?)(?![\w])/giu,
+    dir: /(?<![\p{L}])(?:avenida\s+(?:calle|carrera)|calle|cll|cl|carrera|cra|kra|kr|cr|avenida|av|ak|ac|transversal|tv|tr|diagonal|dg|circular)\.?\s*\d{1,3}\s?[a-z]?(?:\s?bis)?(?:\s?[a-z](?![\p{L}]))?(?:\s?(?:sur|este))?\s*(?:#|\+|n[oº°]\.?|nro\.?|n[úu]mero|-)\s*\d{1,3}\s?[a-z]?(?:\s?bis)?\s*[-–]\s*\d{1,3}(?:\s?(?:sur|este))?(?:\s*,?\s*(?:apto|apartamento|casa|int|interior|torre|bloque|oficina|of|local)\.?\s*[\w\-]{1,6})*/giu,
+    zona: /(?<![\p{L}])(?:[Bb]arrio|BARRIO|[Vv]ereda|VEREDA|[Uu]rbanizaci[óo]n|URBANIZACI[ÓO]N|[Cc]onjunto(?:\s+[Rr]esidencial)?|CONJUNTO(?:\s+RESIDENCIAL)?|[Ff]inca|FINCA|[Hh]acienda|HACIENDA|[Cc]orregimiento|CORREGIMIENTO)\.?\s+((?:[A-ZÁÉÍÓÚÑ0-9][\p{L}0-9]*)(?:\s+(?:de\s+la\s+|del\s+|de\s+|la\s+|el\s+|los\s+|las\s+)?[A-ZÁÉÍÓÚÑ0-9][\p{L}0-9]*){0,3})/gu,
+    placa: /(?<![\p{L}\d])([A-Z]{3}[\s\-]?\d{3}|[A-Z]{3}\d{2}[A-Z])(?![\p{L}\d])/gu,
+    cta: /(?:cuenta(?:\s+(?:de\s+ahorros|corriente|bancaria))?|cta\.?)\s*(?:de\s+ahorros\s*|corriente\s*)?(?:n[oº°]\.?|nro\.?|n[úu]mero|#)?\s*:?\s*(\d[\d\-\s]{5,22}\d)/giu,
+    rad: /(?<![\p{L}])(?:radicado|radicaci[óo]n|rad\.?|expediente|proceso|ius|iuc|sirius|sigdea)(?![\p{L}])\s*(?:n[oº°]\.?|nro\.?|n[úu]mero|#|:)?\s*([A-Z]{0,5}[\-\s]?\d[\w\-.\/]{4,40})/giu,
+    rad23: /(?<!\d)\d{5}[\s\-]?\d{2}[\s\-]?\d{2}[\s\-]?\d{3}[\s\-]?\d{4}[\s\-]?\d{5}[\s\-]?\d{2}(?!\d)/gu
+  };
+
+  function detectText(T, cats, add) {
+    const each = (re, fn) => { re.lastIndex = 0; let m; while ((m = re.exec(T))) { fn(m); if (m[0].length === 0) re.lastIndex++; } };
+    if (cats.has("PER")) {
+      const sticky = new RegExp(`(?:${NAME_SRC})(?![\\p{L}])`, "uy");
+      each(RX.trig, (m) => {
+        sticky.lastIndex = m.index + m[0].length;
+        const mm = sticky.exec(T);
+        if (mm) { const n = cleanName(mm[0], 1); if (n) add("PER", n); }
+      });
+      each(RX.suf, (m) => {
+        const before = T.slice(Math.max(0, m.index - 160), m.index);
+        const toks = before.split(/\s+/).filter(Boolean); const got = [];
+        for (let k = toks.length - 1; k >= 0 && got.length < 8; k--) {
+          const t = toks[k].replace(/[,;:]+$/, "");
+          if (isCapTok(t) && !STOP.has(fold(t)) && !isAcr(t)) got.unshift(t);
+          else if (CONNS.has(fold(t)) && got.length) got.unshift(t);
+          else break;
+        }
+        const gi = got.findIndex((t) => GIVEN.has(fold(t)));
+        const n = cleanName((gi > 0 ? got.slice(gi) : got).join(" "), 2); if (n) add("PER", n);
+      });
+      each(new RegExp(`(?<![\\p{L}])(?:${NAME_SRC})(?![\\p{L}])`, "gu"), (m) => {
+        const toks = m[0].replace(/\s+/g, " ").split(" ");
+        const i = toks.findIndex((t) => GIVEN.has(fold(t)));
+        if (i < 0) return;
+        const n = cleanName(toks.slice(i).join(" "), 2);
+        if (n && GIVEN.has(fold(n.split(" ")[0]))) add("PER", n);
+      });
+    }
+    if (cats.has("DOC")) {
+      each(RX.doc, (m) => add("DOC", m[1]));
+      each(RX.dotted, (m) => {
+        const pre = fold(T.slice(Math.max(0, m.index - 24), m.index));
+        const post = fold(T.slice(m.index + m[0].length, m.index + m[0].length + 24));
+        if (/\$\s*$|valor|suma|cuantia|precio|monto|pesos\s*$/.test(pre) || /^\s*(pesos|millones|mcte|m\/cte|de\s+pesos|cop)/.test(post)) return;
+        add("DOC", m[0]);
+      });
+    }
+    if (cats.has("TEL")) { each(RX.tel, (m) => add("TEL", m[0])); each(RX.telKw, (m) => { if (m[1].replace(/\D/g, "").length >= 7) add("TEL", m[1]); }); }
+    if (cats.has("MAIL")) { each(RX.mail, (m) => add("MAIL", m[0])); each(RX.mailOcr, (m) => add("MAIL", m[0])); each(RX.mailKw, (m) => { if (/[\w]{2,}[^\w\s]?[\w\-]+\./.test(m[1]) && /[@Q©]/.test(m[1])) add("MAIL", m[1]); }); }
+    if (cats.has("DIR")) { each(RX.dir, (m) => add("DIR", m[0])); each(RX.zona, (m) => { const z = cleanZone(m[1]); if (z) add("DIR", z); }); }
+    if (cats.has("PLACA")) each(RX.placa, (m) => { if (/(placa|veh[íi]culo|motocicleta|moto|automotor|carro|camioneta|taxi)/i.test(T.slice(Math.max(0, m.index - 70), m.index))) add("PLACA", m[1]); });
+    if (cats.has("CTA")) each(RX.cta, (m) => { if (m[1].replace(/\D/g, "").length >= 6) add("CTA", m[1]); });
+    if (cats.has("RAD")) { each(RX.rad, (m) => add("RAD", m[1])); each(RX.rad23, (m) => add("RAD", m[0])); }
+  }
+  function cleanZone(z) {
+    const toks = z.split(/\s+/); const out = [];
+    for (const t of toks) { if (STOP.has(fold(t)) && !CONNS.has(fold(t))) break; out.push(t); }
+    while (out.length && CONNS.has(fold(out[out.length - 1]))) out.pop();
+    return out.length ? out.join(" ") : null;
+  }
+
+  const NUMERIC = new Set(["DOC", "TEL", "CTA"]);
+  function canonOf(type, s) {
+    if (NUMERIC.has(type)) return s.replace(/\D/g, "");
+    return fold(s).replace(/[^a-z0-9@.\-\/ ]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  const coreToks = (canon) => canon.split(" ").filter((t) => t && !CONNS.has(t));
+
+  const ACC = { a: "[aáàäâ]", e: "[eéèëê]", i: "[iíìïî]", o: "[oóòöô]", u: "[uúùüû]", n: "[nñ]", c: "[cç]" };
+  const escRe = (c) => c.replace(/[\\^$.*+?()[\]{}|\/]/g, "\\$&");
+  function tokPat(tok) { return [...tok].map((ch) => { const f = fold(ch); return ACC[f] || escRe(f); }).join(""); }
+  function variantRegex(type, surf) {
+    if (NUMERIC.has(type)) {
+      const d = surf.replace(/\D/g, "");
+      if (d.length < 5) return null;
+      return new RegExp("(?<!\\d)" + d.split("").join("[\\s.\\-]?") + "(?!\\d)", "gu");
+    }
+    const toks = surf.trim().split(/\s+/).filter(Boolean);
+    if (!toks.length) return null;
+    const body = toks.map(tokPat).join(type === "PER" ? "\\s+" : "\\s*");
+    return new RegExp("(?<![\\p{L}\\p{N}])" + body + "(?![\\p{L}\\p{N}])", "giu");
+  }
+
+  function anonSettings() {
+    const lines = (v) => v.split(/\n+/).map((x) => x.trim()).filter(Boolean);
+    return {
+      on: $("#anonOn").checked, style: $("#anonStyle").value,
+      cats: new Set($$("[data-cat]").filter((c) => c.checked).map((c) => c.dataset.cat)),
+      always: lines($("#anonAlways").value), never: lines($("#anonNever").value)
+    };
+  }
+
+  function guessType(t) {
+    if (/@/.test(t)) return "MAIL";
+    const digits = t.replace(/\D/g, "").length;
+    if (digits >= 6 && digits / t.replace(/\s/g, "").length > 0.6) return "DOC";
+    const toks = t.split(/\s+/);
+    if (toks.length >= 2 && toks.length <= 6 && toks.every((x) => /^[\p{L}.]+$/u.test(x))) return "PER";
+    return "OTRO";
+  }
+
+  // Construye la lista de datos del archivo: detección, alias, etiquetas y reglas de reemplazo.
+  function computeEntities(job) {
+    const st = anonSettings();
+    const found = new Map();
+    const add = (type, surf, how) => {
+      surf = String(surf).replace(/\s+/g, " ").trim().replace(/[.,;:]+$/, "");
+      if (!surf) return;
+      const canon = canonOf(type, surf);
+      if (!canon || (NUMERIC.has(type) && canon.length < 5) || canon.length < 2) return;
+      const key = type + "|" + canon;
+      let e = found.get(key);
+      if (!e) { e = { key, type, canon, surfaces: new Set(), how: how || "auto" }; found.set(key, e); }
+      e.surfaces.add(surf);
+      if (how) e.how = how;
+    };
+    for (const p of job.pages) { detectText(p.T.s, st.cats, add); if (p.A) detectText(p.A.s, st.cats, add); }
+    detectText(job.base.replace(/[_\-]+/g, " "), st.cats, add);
+    for (const t of st.always) add(guessType(t), t, "lista");
+    for (const m of job.manual) add(m.type, m.text, "manual");
+
+    const never = st.never.map((t) => fold(t).replace(/\s+/g, " "));
+    let list = [...found.values()].filter((e) => !never.some((nv) => nv === e.canon || (e.type !== "PER" ? false : nv.includes(e.canon))));
+
+    // Alias: una persona mencionada en parte ("Pérez", "Juan Pérez") se une a la mención más completa.
+    const pers = list.filter((e) => e.type === "PER").sort((a, b) => coreToks(b.canon).length - coreToks(a.canon).length);
+    const parents = [];
+    for (const e of pers) {
+      const toks = coreToks(e.canon);
+      const cands = parents.filter((p) => toks.every((t) => p.toks.includes(t)));
+      if (cands.length === 1 && e.how === "auto") { cands[0].e.surfaces = new Set([...cands[0].e.surfaces, ...e.surfaces]); cands[0].e.aliases.push(e.key); e.alias = true; }
+      else { e.aliases = e.aliases || []; parents.push({ e, toks }); }
+    }
+    list = list.filter((e) => !e.alias);
+    list.forEach((e) => { e.aliases = e.aliases || []; });
+
+    // Reglas, conteo y orden de aparición.
+    const texts = job.pages.map((p) => p.T.s + (p.A ? "\n" + p.A.s : ""));
+    for (const e of list) {
+      e.rules = [...e.surfaces].map((s) => ({ s, re: variantRegex(e.type, s) })).filter((r) => r.re);
+      e.count = 0; e.first = Infinity;
+      texts.forEach((t, pi) => {
+        const own = job.pages[pi].T.s;
+        for (const r of e.rules) {
+          r.re.lastIndex = 0; let m;
+          while ((m = r.re.exec(own))) { e.count++; e.first = Math.min(e.first, pi * 1e7 + m.index); }
+        }
+        if (e.count === 0 && job.pages[pi].A) for (const r of e.rules) { r.re.lastIndex = 0; if (r.re.test(job.pages[pi].A.s)) { e.count++; e.first = Math.min(e.first, pi * 1e7); } }
+      });
+      e.enabled = !job.disabled.has(e.key);
+    }
+    list.sort((a, b) => a.first - b.first || a.type.localeCompare(b.type));
+    const counters = {};
+    for (const e of list) {
+      if (!e.enabled) { e.label = "—"; continue; }
+      counters[e.type] = (counters[e.type] || 0) + 1;
+      e.label = labelFor(e, counters[e.type], st.style);
+    }
+    job.entities = list;
+    job.style = st.style;
+    job.rules = list.filter((e) => e.enabled).flatMap((e) => e.rules.map((r) => ({ re: r.re, len: r.s.length, label: e.label, e })))
+      .sort((a, b) => b.len - a.len);
+    job.version++;
+    job.cache = {};
+  }
+
+  function labelFor(e, n, style) {
+    if (style === "bar") return "█████";
+    if (style === "ini" && e.type === "PER") {
+      const longest = [...e.surfaces].sort((a, b) => b.length - a.length)[0];
+      return longest.split(/\s+/).filter((t) => !CONNS.has(fold(t))).map((t) => t[0].toUpperCase() + ".").join(" ");
+    }
+    return "[" + TYPES[e.type].tag + " " + n + "]";
+  }
+
+  // Reemplazo en texto corrido; las etiquetas quedan marcadas para resaltarlas en Word.
+  function anonText(job, s) {
+    for (const r of job.rules) s = s.replace(r.re, S0 + r.label + S1);
+    return s;
+  }
+  const stripMarks = (s) => s.replace(/[]/g, "");
+
+  // Coincidencias de la página → cajas de tachado (unidas por renglón).
+  function pageRedactions(job, p) {
+    const res = [];
+    const run = (idx, primary) => {
+      const covered = [];
+      for (const r of job.rules) {
+        r.re.lastIndex = 0; let m;
+        while ((m = r.re.exec(idx.s))) {
+          const a = m.index, b = a + m[0].length;
+          if (!m[0].length) { r.re.lastIndex++; continue; }
+          if (covered.some(([x, y]) => a < y && b > x)) continue;
+          covered.push([a, b]);
+          const words = idx.map.filter((w) => w.s < b && w.e > a);
+          if (!words.length) continue;
+          const byLine = new Map();
+          for (const w of words) {
+            const box = byLine.get(w.li) || { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+            box.x0 = Math.min(box.x0, w.w.x0); box.y0 = Math.min(box.y0, w.w.y0); box.x1 = Math.max(box.x1, w.w.x1); box.y1 = Math.max(box.y1, w.w.y1);
+            byLine.set(w.li, box);
+          }
+          res.push({ rects: [...byLine.values()], label: r.label, primary, words: primary ? words.map((w) => w.w) : [] });
+        }
+      }
+    };
+    run(p.T, true);
+    if (p.A) run(p.A, false);
+    // Las cajas de la fuente secundaria solo se agregan donde la principal no tachó ya.
+    const prim = res.filter((r) => r.primary).flatMap((r) => r.rects);
+    const overlap = (a, b) => { const ix = Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)); const iy = Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0)); return ix * iy / Math.max(1, (a.x1 - a.x0) * (a.y1 - a.y0)); };
+    return res.filter((r) => r.primary || !r.rects.every((x) => prim.some((y) => overlap(x, y) > 0.5)));
+  }
+
+  async function redactedCanvas(job, p) {
+    const bmp = await createImageBitmap(new Blob([p.jpg], { type: "image/jpeg" }));
+    const c = document.createElement("canvas"); c.width = p.cw; c.height = p.ch;
+    const ctx = c.getContext("2d"); ctx.drawImage(bmp, 0, 0); if (bmp.close) bmp.close();
+    const reds = pageRedactions(job, p);
+    for (const r of reds) {
+      for (const b of r.rects) {
+        const h = b.y1 - b.y0, pad = Math.max(2, Math.round(h * 0.15));
+        b.X0 = Math.max(0, b.x0 - pad - h * 0.1); b.Y0 = Math.max(0, b.y0 - pad); b.X1 = Math.min(p.cw, b.x1 + pad + h * 0.1); b.Y1 = Math.min(p.ch, b.y1 + pad);
+        ctx.fillStyle = "#000"; ctx.fillRect(b.X0, b.Y0, b.X1 - b.X0, b.Y1 - b.Y0);
+      }
+      if (r.primary && job.style !== "bar") {
+        const b = r.rects.slice().sort((x, y) => (y.X1 - y.X0) - (x.X1 - x.X0))[0];
+        const w = b.X1 - b.X0, h = b.Y1 - b.Y0;
+        let fs = Math.max(6, h * 0.62);
+        ctx.font = "600 " + fs + "px Arial, Helvetica, sans-serif";
+        let tw = ctx.measureText(r.label).width;
+        if (tw > w - 6) { fs = fs * (w - 6) / tw; ctx.font = "600 " + fs + "px Arial, Helvetica, sans-serif"; tw = ctx.measureText(r.label).width; }
+        if (fs >= 6) { ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.fillText(r.label, b.X0 + (w - tw) / 2, b.Y0 + h / 2 + fs * 0.04); }
+        r.labelBox = b;
+      }
+    }
+    return { canvas: c, reds };
+  }
+
+  // ---------- Revisión de la anonimización ----------
+  function buildAnonUI(job) {
+    const a = job.ui.anon; a.innerHTML = "";
+    const head = el("div", "anon-head"); const chips = el("div", "chips");
+    head.append(el("strong", null, "Versión anonimizada"), chips);
+    const intro = el("div", "hint", "Revisa la lista: desmarca lo que no deba ocultarse y agrega lo que falte. Un 0 en “Veces” significa que el dato no aparece en el texto reconocido.");
+    const wrap = el("div", "table-wrap");
+    const table = el("table", "ent-table");
+    table.innerHTML = "<thead><tr><th>Usar</th><th>Tipo</th><th>Texto detectado</th><th>Reemplazo</th><th>Veces</th></tr></thead>";
+    const tbody = el("tbody"); table.append(tbody); wrap.append(table);
+    const addRow = el("form", "add-row");
+    const iText = el("input"); iText.type = "text"; iText.placeholder = "Dato que falta, tal como aparece"; iText.id = "add-" + Math.random().toString(36).slice(2, 8); iText.setAttribute("aria-label", "Dato a agregar");
+    const iType = el("select"); iType.setAttribute("aria-label", "Tipo de dato");
+    for (const [k, v] of Object.entries(TYPES)) { const o = el("option", null, v.name); o.value = k; iType.append(o); }
+    const bAdd = el("button", "small", "Agregar"); bAdd.type = "submit";
+    addRow.append(iText, iType, bAdd);
+    iText.addEventListener("input", () => { if (iText.value.trim()) iType.value = guessType(iText.value.trim()); });
+    addRow.addEventListener("submit", (ev) => { ev.preventDefault(); const t = iText.value.trim(); if (!t) return; job.manual.push({ type: iType.value, text: t }); iText.value = ""; refreshAnon(job); });
+
+    const acts = el("div", "actions");
+    const bD = el("button", "seal", "Word anonimizado");
+    const bP = el("button", null, "PDF/A anonimizado");
+    const bM = el("button", null, "Markdown anonimizado");
+    const bC = el("button", null, "Tabla de equivalencias");
+    acts.append(bD, bP, bM, bC);
+    const ab = () => anonBase(job);
+    bD.addEventListener("click", () => offer(job, ab() + "_ANONIMIZADO.docx", () => buildDocx(job, true)));
+    bP.addEventListener("click", () => offer(job, ab() + "_ANONIMIZADO_PDFA.pdf", async () => new Blob([await buildPdfA(job, true)], { type: "application/pdf" })));
+    bM.addEventListener("click", () => offer(job, ab() + "_ANONIMIZADO.md", async () => buildMarkdown(job, true)));
+    bC.addEventListener("click", () => offer(job, job.base + "_EQUIVALENCIAS_RESERVADO.csv", async () => buildCsv(job)));
+
+    const prev = el("details", "prev");
+    const ctl = el("div", "prev-ctl");
+    const iPg = el("input"); iPg.type = "number"; iPg.min = "1"; iPg.max = String(job.pages.length); iPg.value = "1"; iPg.setAttribute("aria-label", "Página");
+    const bPrev = el("button", "small", "Anterior"), bNext = el("button", "small", "Siguiente");
+    ctl.append(el("span", null, "Página"), iPg, el("span", null, "de " + job.pages.length), bPrev, bNext);
+    const img = el("img"); img.alt = "Vista previa de la página anonimizada";
+    const pnote = el("div", "hint");
+    prev.append(el("summary", null, "Vista previa de páginas anonimizadas"), ctl, img, pnote);
+    const show = async () => {
+      const i = Math.min(job.pages.length, Math.max(1, +iPg.value || 1)); iPg.value = i;
+      const p = job.pages[i - 1];
+      pnote.textContent = "Generando…";
+      const { canvas, reds } = await redactedCanvas(job, p);
+      const scale = Math.min(1, 1100 / canvas.width);
+      const small = document.createElement("canvas"); small.width = Math.round(canvas.width * scale); small.height = Math.round(canvas.height * scale);
+      small.getContext("2d").drawImage(canvas, 0, 0, small.width, small.height);
+      canvas.width = canvas.height = 0;
+      small.toBlob((b) => { if (img.dataset.url) URL.revokeObjectURL(img.dataset.url); const u = URL.createObjectURL(b); img.dataset.url = u; img.src = u; }, "image/jpeg", 0.85);
+      pnote.textContent = reds.length ? reds.length + (reds.length === 1 ? " tachado" : " tachados") + " en esta página." : "Sin tachados en esta página. Si ves datos personales en la imagen, agrégalos arriba.";
+    };
+    prev.addEventListener("toggle", () => { if (prev.open) show(); });
+    iPg.addEventListener("change", show);
+    bPrev.addEventListener("click", () => { iPg.value = Math.max(1, +iPg.value - 1); show(); });
+    bNext.addEventListener("click", () => { iPg.value = Math.min(job.pages.length, +iPg.value + 1); show(); });
+
+    const mdDet = el("details"); const mdPre = el("pre", "md-out"); mdDet.append(el("summary", null, "Ver Markdown anonimizado"), mdPre);
+    mdDet.addEventListener("toggle", () => { if (mdDet.open) mdPre.textContent = buildMarkdown(job, true); });
+
+    a.append(head, intro, wrap, addRow, acts, prev, mdDet);
+    job.ui.anonParts = { chips, tbody, prev, show, mdDet, mdPre };
+  }
+
+  function refreshAnon(job) {
+    if (job.state !== "ok") return;
+    const st = anonSettings();
+    job.ui.anon.hidden = !st.on;
+    if (!st.on) return;
+    computeEntities(job);
+    const { chips, tbody, prev, show, mdDet, mdPre } = job.ui.anonParts;
+    chips.innerHTML = "";
+    const counts = {};
+    job.entities.filter((e) => e.enabled).forEach((e) => { counts[e.type] = (counts[e.type] || 0) + 1; });
+    const keys = Object.keys(counts);
+    if (!keys.length) chips.append(el("span", "chip", "Sin datos detectados"));
+    keys.forEach((k) => chips.append(el("span", "chip", counts[k] + " " + (counts[k] === 1 ? TYPES[k].name.toLowerCase() : TYPES[k].plural))));
+    tbody.innerHTML = "";
+    if (!job.entities.length) {
+      const tr = el("tr"); const td = el("td", null, "No se detectaron datos personales. Si el documento los tiene, agrégalos abajo o en “Anonimizar siempre”."); td.colSpan = 5; tr.append(td); tbody.append(tr);
+    }
+    for (const e of job.entities) {
+      const tr = el("tr"); if (!e.enabled) tr.className = "off";
+      const cb = el("input"); cb.type = "checkbox"; cb.checked = e.enabled; cb.setAttribute("aria-label", "Usar este dato");
+      cb.addEventListener("change", () => { if (cb.checked) job.disabled.delete(e.key); else job.disabled.add(e.key); refreshAnon(job); });
+      const td0 = el("td"); td0.append(cb);
+      const surfs = [...e.surfaces].sort((a, b) => b.length - a.length);
+      const tdO = el("td", "orig", surfs[0]);
+      if (surfs.length > 1) tdO.append(el("small", null, "también: " + surfs.slice(1, 6).join(" · ") + (surfs.length > 6 ? " …" : "")));
+      if (e.how !== "auto") tdO.append(el("small", null, e.how === "manual" ? "agregado a mano" : "de “Anonimizar siempre”"));
+      const tdC = el("td", "num" + (e.count ? "" : " zero"), String(e.count));
+      if (!e.count) tdC.title = "No aparece en el texto reconocido";
+      tr.append(td0, el("td", "type", TYPES[e.type].name), tdO, el("td", "lab", e.label), tdC);
+      tbody.append(tr);
+    }
+    if (prev.open) show();
+    if (mdDet.open) mdPre.textContent = buildMarkdown(job, true);
+  }
+
+  let tRefresh;
+  const refreshAll = () => { clearTimeout(tRefresh); tRefresh = setTimeout(() => queue.forEach(refreshAnon), 350); };
+  ["#anonOn", "#anonStyle", "#anonAlways", "#anonNever"].forEach((s) => $(s).addEventListener("input", refreshAll));
+  $$("[data-cat]").forEach((c) => c.addEventListener("change", refreshAll));
+
+  function anonBase(job) {
+    const b = stripMarks(anonText(job, job.base.replace(/[_]+/g, " "))).replace(/[\[\]█]/g, "").replace(/\s+/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+    return b || "documento";
+  }
+
+  // ---------- Markdown ----------
+  const escMd = (t) => t.replace(/^(\s*)([#>])/, "$1\\$2");
+  const normBullet = (t) => t.replace(/^[•·▪◦–*]\s+/, "- ");
+  function yamlStr(s) { return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'; }
+  function pageTag(p) { return p.source === "nativo" ? "texto nativo" : p.empty ? "OCR · sin texto detectado" : "OCR · confianza " + pct(p.conf); }
+
+  function buildMarkdown(job, anon) {
+    if (anon && !job.rules) computeEntities(job);
+    const tx = (s) => (anon ? stripMarks(anonText(job, s)) : s);
+    const pages = job.pages, total = job.total;
     const ocrPages = pages.filter((p) => p.source === "OCR" && !p.empty);
     const avg = ocrPages.length ? ocrPages.reduce((a, p) => a + p.conf, 0) / ocrPages.length : null;
     const now = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+    const title = anon ? anonBase(job) : job.base;
     const head = [
       "---",
-      "titulo: " + yamlStr(base),
-      "archivo_origen: " + yamlStr(fileName),
+      "titulo: " + yamlStr(title),
+      "archivo_origen: " + yamlStr(anon ? title + ".pdf" : job.file.name),
       "paginas: " + total,
       pages.length < total ? "paginas_procesadas: " + pages.length : null,
       "fecha_conversion: " + yamlStr(now),
-      "motor_ocr: " + yamlStr("Tesseract 5 LSTM (" + lang + "), " + dpi + " ppp"),
+      "motor_ocr: " + yamlStr("Tesseract 5 LSTM (" + job.opts.lang + "), " + job.opts.dpi + " ppp"),
       "paginas_texto_nativo: " + pages.filter((p) => p.source === "nativo").length,
       avg == null ? null : "confianza_ocr_media: " + avg.toFixed(1),
-      "---", "", "# " + base, ""
+      anon ? "anonimizado: true" : null,
+      anon ? "criterio_reemplazo: " + yamlStr({ tag: "etiqueta numerada", ini: "iniciales en personas", bar: "tachado" }[job.style]) : null,
+      anon ? "datos_reemplazados: " + job.entities.filter((e) => e.enabled).length : null,
+      "---", "", "# " + title, ""
     ].filter((x) => x != null);
     const body = pages.map((p) => {
-      const tag = p.source === "nativo" ? "texto nativo" : p.empty ? "OCR · sin texto detectado" : "OCR · confianza " + pct(p.conf);
-      const parts = ["---", "**Página " + p.index + "** · " + tag, ""];
+      const parts = ["---", "**Página " + p.index + "** · " + pageTag(p), ""];
       if (p.source === "OCR" && !p.empty && p.conf < LOW) parts.push("> **Revisar:** confianza OCR baja en esta página. Coteja con el original antes de citarla.", "");
-      if (p.md) parts.push(p.md, "");
-      else parts.push("_(Página sin texto reconocible: puede ser una imagen, un sello o una hoja en blanco.)_", "");
+      if (p.blocks.length) {
+        parts.push(p.blocks.map((b) => {
+          const s = tx(b.s);
+          return b.k === "h" ? "### " + s.replace(/^#+\s*/, "") : b.k === "li" ? normBullet(s) : escMd(s);
+        }).join("\n\n"), "");
+      } else parts.push("_(Página sin texto reconocible: puede ser una imagen, un sello o una hoja en blanco.)_", "");
       return parts.join("\n");
     });
     return head.join("\n") + "\n" + body.join("\n");
   }
 
+  // ---------- Word (.docx) ----------
+  const xmlEsc = (s) => String(s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function runs(s, baseProps) {
+    const parts = s.split(/(.*?)/);
+    return parts.map((t, i) => {
+      if (!t) return "";
+      const mark = i % 2 === 1;
+      const rpr = (baseProps || "") + (mark ? "<w:b/><w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"E6E6E6\"/>" : "");
+      return "<w:r>" + (rpr ? "<w:rPr>" + rpr + "</w:rPr>" : "") + "<w:t xml:space=\"preserve\">" + xmlEsc(t) + "</w:t></w:r>";
+    }).join("");
+  }
+  const para = (style, inner) => "<w:p><w:pPr><w:pStyle w:val=\"" + style + "\"/></w:pPr>" + inner + "</w:p>";
+
+  async function buildDocx(job, anon) {
+    if (anon) computeEntities(job);
+    const tx = (s) => (anon ? anonText(job, s) : s);
+    const title = anon ? anonBase(job) : job.base;
+    const body = [];
+    body.push(para("Title", runs(title)));
+    const metaTxt = "Origen: " + (anon ? title + ".pdf" : job.file.name) + " · " + job.total + (job.total === 1 ? " página" : " páginas") + " · OCR Tesseract 5 (" + job.opts.lang + "), " + job.opts.dpi + " ppp · " + new Date().toLocaleDateString("es-CO");
+    body.push(para("Meta", runs(metaTxt)));
+    if (anon) body.push(para("Aviso", runs("Versión anonimizada. Los datos personales se reemplazaron por " + ({ tag: "etiquetas numeradas", ini: "iniciales (personas) y etiquetas", bar: "tachados" }[job.style]) + ". Este documento no incluye la tabla de equivalencias.")));
+    for (const p of job.pages) {
+      body.push(para("Pagina", runs("Página " + p.index + " · " + pageTag(p))));
+      if (p.source === "OCR" && !p.empty && p.conf < LOW) body.push(para("Aviso", runs("Revisar: confianza OCR baja en esta página. Coteja con el original antes de citarla.")));
+      if (!p.blocks.length) body.push(para("Aviso", runs("(Página sin texto reconocible: puede ser una imagen, un sello o una hoja en blanco.)")));
+      for (const b of p.blocks) {
+        const s = tx(b.s);
+        if (b.k === "h") body.push(para("Heading3", runs(s)));
+        else if (b.k === "li") body.push(para("Lista", runs(s.replace(/^[•·▪◦–*\-]\s+/, "• "))));
+        else body.push(para("Normal", runs(s)));
+      }
+    }
+    const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+    const document = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document ' + W + '><w:body>' + body.join("") +
+      '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
+    const sty = (id, name, ppr, rpr, extra) => '<w:style w:type="paragraph" w:styleId="' + id + '"><w:name w:val="' + name + '"/>' + (id !== "Normal" ? '<w:basedOn w:val="Normal"/>' : "") + (extra || "") + '<w:pPr>' + ppr + '</w:pPr><w:rPr>' + rpr + '</w:rPr></w:style>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles ' + W + '>' +
+      '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="es-CO"/></w:rPr></w:rPrDefault>' +
+      '<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>' +
+      sty("Normal", "Normal", '<w:jc w:val="both"/>', "", '<w:qFormat/>') +
+      sty("Title", "Title", '<w:keepNext/><w:spacing w:after="120"/><w:jc w:val="left"/>', '<w:b/><w:sz w:val="32"/><w:szCs w:val="32"/>', '<w:next w:val="Normal"/><w:qFormat/>') +
+      sty("Heading3", "heading 3", '<w:keepNext/><w:spacing w:before="200" w:after="120"/><w:jc w:val="left"/><w:outlineLvl w:val="2"/>', '<w:b/>', '<w:next w:val="Normal"/><w:qFormat/>') +
+      sty("Meta", "Folio meta", '<w:spacing w:after="240"/><w:jc w:val="left"/>', '<w:color w:val="5B6661"/><w:sz w:val="18"/><w:szCs w:val="18"/>') +
+      sty("Pagina", "Folio página", '<w:keepNext/><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="BFC7C3"/></w:pBdr><w:spacing w:before="360" w:after="160"/><w:jc w:val="left"/>', '<w:b/><w:color w:val="1D6A51"/><w:sz w:val="18"/><w:szCs w:val="18"/>') +
+      sty("Aviso", "Folio aviso", '<w:jc w:val="left"/>', '<w:i/><w:color w:val="9A5B00"/><w:sz w:val="20"/><w:szCs w:val="20"/>') +
+      sty("Lista", "Folio lista", '<w:ind w:left="720" w:hanging="360"/><w:spacing w:after="80"/>', "") +
+      '</w:styles>';
+    const now = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+    const core = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+      '<dc:title>' + xmlEsc(stripMarks(title)) + '</dc:title><dc:creator>Folio OCR</dc:creator><cp:lastModifiedBy>Folio OCR</cp:lastModifiedBy><dc:language>es-CO</dc:language>' +
+      '<dcterms:created xsi:type="dcterms:W3CDTF">' + now + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + now + '</dcterms:modified></cp:coreProperties>';
+    const app = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Folio OCR</Application></Properties>';
+    const types = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+      '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>';
+    const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>';
+    const docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+    const zip = new JSZip();
+    zip.file("[Content_Types].xml", types);
+    zip.file("_rels/.rels", rels);
+    zip.file("word/document.xml", document);
+    zip.file("word/styles.xml", styles);
+    zip.file("word/_rels/document.xml.rels", docRels);
+    zip.file("docProps/core.xml", core);
+    zip.file("docProps/app.xml", app);
+    return await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+  }
+
+  // ---------- Tabla de equivalencias ----------
+  function buildCsv(job) {
+    computeEntities(job);
+    const q = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+    const rows = [["reemplazo", "tipo", "texto_detectado", "otras_formas", "apariciones", "aplicado", "origen"].join(";")];
+    for (const e of job.entities) {
+      const s = [...e.surfaces].sort((a, b) => b.length - a.length);
+      rows.push([q(e.label), q(TYPES[e.type].name), q(s[0]), q(s.slice(1).join(" | ")), e.count, e.enabled ? "si" : "no", q(e.how)].join(";"));
+    }
+    return "﻿" + rows.join("\r\n") + "\r\n";
+  }
+
   // ---------- PDF/A-2b ----------
   function b64ToBytes(b64) { const s = atob(b64); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
-  function xmlEsc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  const xmpEsc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-  async function buildPdfA(pages, title) {
-    const { PDFDocument, PDFName, PDFString, PDFHexString } = PDFLib;
+  async function buildPdfA(job, anon) {
+    const { PDFDocument, PDFName, PDFString, PDFHexString, StandardFonts, TextRenderingMode, pushGraphicsState, popGraphicsState, beginText, endText,
+      setFontAndSize, setTextRenderingMode, setCharacterSqueeze, setTextMatrix, showText } = PDFLib;
+    if (anon) computeEntities(job);
     const doc = await PDFDocument.create({ updateMetadata: false });
-    for (const p of pages) {
+    const font = anon ? await doc.embedFont(StandardFonts.Helvetica) : null;
+    const enc = (t) => {
+      try { return font.encodeText(t); }
+      catch (_) { const c = t.normalize("NFC").replace(/[^\x20-\x7E -ÿ]/g, ""); return c ? font.encodeText(c) : null; }
+    };
+    for (const p of job.pages) {
       const pg = doc.addPage([p.wPt, p.hPt]);
-      const img = await doc.embedJpg(p.jpg);
-      pg.drawImage(img, { x: 0, y: 0, width: p.wPt, height: p.hPt });
-      if (p.textPdf && !p.empty) {
-        try {
-          const [ep] = await doc.embedPdf(p.textPdf, [0]);
-          pg.drawPage(ep, { x: 0, y: 0, width: p.wPt, height: p.hPt });
-        } catch (e) { console.warn("Capa de texto omitida en página " + p.index, e); }
+      if (!anon) {
+        const img = await doc.embedJpg(p.jpg);
+        pg.drawImage(img, { x: 0, y: 0, width: p.wPt, height: p.hPt });
+        if (p.textPdf && !p.empty) {
+          try { const [ep] = await doc.embedPdf(p.textPdf, [0]); pg.drawPage(ep, { x: 0, y: 0, width: p.wPt, height: p.hPt }); }
+          catch (e) { console.warn("Capa de texto omitida en página " + p.index, e); }
+        }
+        continue;
       }
-      p.jpg = null; p.textPdf = null;
+      const { canvas, reds } = await redactedCanvas(job, p);
+      const jpg = await canvasToJpeg(canvas, job.opts.color === "gray" ? 0.8 : 0.85);
+      canvas.width = canvas.height = 0;
+      const img = await doc.embedJpg(jpg);
+      pg.drawImage(img, { x: 0, y: 0, width: p.wPt, height: p.hPt });
+      // Capa de texto invisible: palabras no tachadas + la etiqueta de cada tachado.
+      const hidden = new Set(reds.flatMap((r) => r.words));
+      const items = [];
+      for (const l of p.lines) for (const w of l.words) if (!hidden.has(w)) items.push({ t: w.t, x0: w.x0, y0: w.y0, x1: w.x1, y1: w.y1 });
+      if (job.style !== "bar") for (const r of reds) if (r.primary && r.labelBox) items.push({ t: r.label, x0: r.labelBox.X0, y0: r.labelBox.Y0, x1: r.labelBox.X1, y1: r.labelBox.Y1 });
+      if (!items.length) continue;
+      const k = p.wPt / p.cw;
+      const key = pg.node.newFontDictionary(font.name, font.ref);
+      const ops = [pushGraphicsState(), beginText(), setTextRenderingMode(TextRenderingMode.Invisible)];
+      for (const it of items) {
+        const hex = enc(it.t); if (!hex) continue;
+        const hPt = Math.max(1, (it.y1 - it.y0) * k), wPt = Math.max(1, (it.x1 - it.x0) * k);
+        const size = Math.max(1, hPt * 0.85);
+        const natural = font.widthOfTextAtSize(it.t.replace(/[^\x20-\x7E -ÿ]/g, "") || "x", size);
+        const sq = Math.min(500, Math.max(10, wPt / Math.max(0.1, natural) * 100));
+        ops.push(setFontAndSize(key, size), setCharacterSqueeze(sq), setTextMatrix(1, 0, 0, 1, it.x0 * k, p.hPt - it.y1 * k + hPt * 0.2), showText(hex));
+      }
+      ops.push(endText(), popGraphicsState());
+      pg.pushOperators(...ops);
     }
 
+    const title = anon ? anonBase(job) : job.base;
     const now = new Date(); now.setMilliseconds(0);
     const iso = now.toISOString().replace(/\.\d{3}Z$/, "Z");
     const producer = "Folio OCR (pdf-lib 1.17.1; Tesseract 5)";
@@ -703,22 +1377,20 @@ obras por presuntas irregularidades en el contrato ...
 '   <pdfaid:part>2</pdfaid:part>\n' +
 '   <pdfaid:conformance>B</pdfaid:conformance>\n' +
 '   <dc:format>application/pdf</dc:format>\n' +
-'   <dc:title><rdf:Alt><rdf:li xml:lang="x-default">' + xmlEsc(title) + '</rdf:li></rdf:Alt></dc:title>\n' +
+'   <dc:title><rdf:Alt><rdf:li xml:lang="x-default">' + xmpEsc(title) + '</rdf:li></rdf:Alt></dc:title>\n' +
 '   <dc:language><rdf:Bag><rdf:li>es-CO</rdf:li></rdf:Bag></dc:language>\n' +
 '   <xmp:CreateDate>' + iso + '</xmp:CreateDate>\n' +
 '   <xmp:ModifyDate>' + iso + '</xmp:ModifyDate>\n' +
 '   <xmp:MetadataDate>' + iso + '</xmp:MetadataDate>\n' +
-'   <xmp:CreatorTool>' + xmlEsc(creator) + '</xmp:CreatorTool>\n' +
-'   <pdf:Producer>' + xmlEsc(producer) + '</pdf:Producer>\n' +
+'   <xmp:CreatorTool>' + xmpEsc(creator) + '</xmp:CreatorTool>\n' +
+'   <pdf:Producer>' + xmpEsc(producer) + '</pdf:Producer>\n' +
 '  </rdf:Description>\n' +
 ' </rdf:RDF>\n' +
 '</x:xmpmeta>\n' +
 '<?xpacket end="w"?>';
     const ctx = doc.context;
-    const xmpBytes = new TextEncoder().encode(xmp);
-    const metaStream = ctx.stream(xmpBytes, { Type: "Metadata", Subtype: "XML" });
+    const metaStream = ctx.stream(new TextEncoder().encode(xmp), { Type: "Metadata", Subtype: "XML" });
     doc.catalog.set(PDFName.of("Metadata"), ctx.register(metaStream));
-
     const icc = ctx.flateStream(b64ToBytes(SRGB_ICC_B64), { N: 3 });
     const intent = ctx.obj({
       Type: "OutputIntent", S: "GTS_PDFA1",
@@ -727,14 +1399,12 @@ obras por presuntas irregularidades en el contrato ...
       DestOutputProfile: ctx.register(icc)
     });
     doc.catalog.set(PDFName.of("OutputIntents"), ctx.obj([intent]));
-
     const id = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
     ctx.trailerInfo.ID = ctx.obj([PDFHexString.of(id), PDFHexString.of(id)]);
-
     return await doc.save({ useObjectStreams: false, updateFieldAppearances: false });
   }
 
-  if (!window.pdfjsLib || !window.Tesseract || !window.PDFLib) {
+  if (!window.pdfjsLib || !window.Tesseract || !window.PDFLib || !window.JSZip) {
     engineState.textContent = "Estado: no cargaron las librerías. Recarga la página.";
   }
 })();
