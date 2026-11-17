@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OCR de PDF</title>
 <meta name="description" content="Convierte PDF escaneados en texto y en PDF con capa de texto buscable, todo en el navegador.">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/tesseract.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
 <style>
   :root {
     --bg: #f6f7f9;
@@ -197,7 +197,13 @@
 </main>
 
 <script>
-  const PDFJS_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const PDFJS_WORKER_URL = 'vendor/pdf.worker.min.js';
+  // Motor OCR y datos de idioma incluidos en vendor/: no se descarga nada de internet.
+  const OCR_OPTIONS = {
+    workerPath: 'vendor/worker.min.js',
+    corePath: 'vendor/core/',
+    langPath: 'vendor/lang/',
+  };
   // 2.5 × 72 pt ≈ 180 ppp: suficiente para OCR sin consumir demasiada memoria.
   const RENDER_SCALE = 2.5;
 
@@ -213,6 +219,8 @@
 
   const jobs = [];
   let running = false;
+  // El motor OCR usa Web Workers, que no funcionan abriendo el archivo directamente (file://).
+  const needsServer = location.protocol === 'file:';
   let current = null; // { job, page, total } que recibe el progreso del motor OCR
 
   // ---------- Utilidades ----------
@@ -223,7 +231,7 @@
 
   function refreshControls() {
     const hasPending = jobs.some(j => j.state === 'pending');
-    els.start.disabled = running || !hasPending;
+    els.start.disabled = running || !hasPending || needsServer;
     els.lang.disabled = running;
     els.empty.hidden = jobs.length > 0;
   }
@@ -245,9 +253,14 @@
 
   // Carga pdf.js desde un blob same-origin: evita restricciones de Worker entre orígenes.
   async function configurePdfJs() {
-    const code = await (await fetch(PDFJS_WORKER_URL)).text();
-    const blobUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
-    pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
+    try {
+      const code = await (await fetch(PDFJS_WORKER_URL)).text();
+      const blobUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+      pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
+    } catch (err) {
+      // Por ejemplo, si la página se abre como archivo local: pdf.js usa la ruta directa.
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
+    }
   }
 
   // ---------- Cola de archivos ----------
@@ -428,6 +441,7 @@
     let worker = null;
     try {
       worker = await Tesseract.createWorker(els.lang.value, 1, {
+        ...OCR_OPTIONS,
         logger: onEngineProgress,
       });
       setStatus(`Procesando ${pending.length} archivo(s)…`);
@@ -478,11 +492,21 @@
   // ---------- Arranque ----------
 
   (async () => {
+    if (needsServer) {
+      setStatus('Esta página no puede procesar PDF abierta como archivo. Ejecuta un servidor local dentro de la carpeta ocr-pdf (python3 -m http.server) y abre http://localhost:8000.');
+      refreshControls();
+      return;
+    }
+    if (typeof pdfjsLib === 'undefined' || typeof Tesseract === 'undefined' || typeof PDFLib === 'undefined') {
+      setStatus('No se cargaron las librerías de vendor/. Abre esta página desde un servidor local (ver instrucciones) y no desde el archivo directamente.');
+      refreshControls();
+      return;
+    }
     try {
       await configurePdfJs();
       setStatus('Listo. Selecciona tus PDF para comenzar.');
     } catch (err) {
-      setStatus('No se pudieron cargar las librerías. Revisa tu conexión a internet.');
+      setStatus('No se pudo preparar el lector de PDF. Abre esta página desde un servidor local, no desde el archivo directamente.');
     }
     refreshControls();
   })();
